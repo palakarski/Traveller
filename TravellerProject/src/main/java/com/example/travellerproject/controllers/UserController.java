@@ -27,10 +27,10 @@ public class UserController {
             return ResponseEntity.ok(userService.getById(id));
         }
 
-//        @GetMapping(value = "/users/{username}")
-//        public ResponseEntity<UserWithOutPassDTO>getByUserName(@PathVariable String username){
-//            return ResponseEntity.ok(userService.getByUserName(username));
-//        }
+        @GetMapping(value = "/users/find/{username}")
+        public ResponseEntity<UserWithOutPassDTO> getByusername(@PathVariable String username){
+            return ResponseEntity.ok(userService.getByUserName(username));
+        }
 
 
         @PostMapping(value = "/register")
