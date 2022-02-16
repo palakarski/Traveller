@@ -56,7 +56,7 @@ public class UserService {
             if(password == null || password.isBlank()){
                 throw new BadRequestExeption("Password is mandatory");
             }
-            if(username.matches(userRepository.findByUsername(username).getUsername())){
+            if(userRepository.findByUsername(username)!=null){
                 throw new BadRequestExeption("Username is already taken.");
             }
             //TODO
@@ -66,7 +66,7 @@ public class UserService {
             if(!password.equals(confpass)){
                 throw new BadRequestExeption("Passwords doesnt match");
             }
-            if(email.equals(userRepository.findByEmail(email))){
+            if(email.equals(userRepository.findByEmail(email).getEmail())){
                 throw new BadRequestExeption("Email is already taken");
             }
 
