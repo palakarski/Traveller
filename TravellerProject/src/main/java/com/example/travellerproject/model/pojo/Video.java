@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-
+@Entity
 @Component
 @Getter
 @Setter

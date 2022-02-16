@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+@Entity
 @Component
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class User {
     private String lastName;
     @Column
     private String username;
-    @Column(name = "birth_date")
+    @Column(name = "date_of_birth")
     private LocalDate birthDate;
     @Column
     private String email;
@@ -33,8 +33,6 @@ public class User {
     private String password;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    @Column(name = "last_login")
-    private LocalDateTime lastLogin;
     @Column(name = "is_admin")
     private boolean isAdmin;
     @Column
