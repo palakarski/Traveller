@@ -2,6 +2,8 @@ package com.example.travellerproject.controllers;
 
 import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.model.dto.MessageDTO;
+import com.example.travellerproject.model.dto.user.ChangePasswordDTO;
+import com.example.travellerproject.model.dto.user.ForgottenPassDTO;
 import com.example.travellerproject.model.dto.user.UserRegisterDTO;
 import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
 import com.example.travellerproject.model.pojo.User;
@@ -43,13 +45,16 @@ public class UserController {
         public ResponseEntity<UserWithOutPassDTO> login(@RequestBody User user, HttpSession session){
         String username = user.getUsername();
         String password = user.getPassword();
+            if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
+                throw new BadRequestExeption("You are already logged in.");
+            }
         User u = userService.login(username,password);
         session.setAttribute(LOGGED,u.getId());
         UserWithOutPassDTO userWithOutPassDTO = modelMapper.map(u,UserWithOutPassDTO.class);
         return  ResponseEntity.ok(userWithOutPassDTO);
         }
         @PostMapping(value ="/logout")
-        public MessageDTO logout(@RequestBody User user, HttpSession session){
+        public MessageDTO logout(HttpSession session){
             if(session.isNew() || session.getAttribute(LOGGED)==null){
                 throw new BadRequestExeption("You must be logged first");
             }
@@ -66,13 +71,16 @@ public class UserController {
         userService.deleteAcc(id);
         return new MessageDTO("Account has been deleted");
         }
-        @PostMapping(value = "/changepass")
-        public MessageDTO changePass(HttpSession session,@RequestBody String oldpassword,@RequestBody String newpassword,@RequestBody String repeatedNewPass){
+        @PutMapping(value = "/changepass")
+        public MessageDTO changePass(HttpSession session, @RequestBody ChangePasswordDTO changePasswordDTO){
+            String newpassword = changePasswordDTO.getNewpassword();
+            String confnewpassword = changePasswordDTO.getConfnewpassword();
+            String oldpassword = changePasswordDTO.getOldpassword();
             if(session.isNew()||session.getAttribute(LOGGED)==null){
                 throw new BadRequestExeption("You need to be logged first");
             }
             long id = (Long)session.getAttribute(LOGGED);
-            if(!newpassword.equals(repeatedNewPass)){
+            if(!newpassword.equals(confnewpassword)){
                 throw new BadRequestExeption("Passwords need to match");
             }
             if(!newpassword.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
@@ -81,6 +89,18 @@ public class UserController {
             return userService.changePassword(id,oldpassword,newpassword);
 
         }
+        @PutMapping(value = "/forgotten_password")
+        public MessageDTO forgottenPass(HttpSession session, @RequestBody ForgottenPassDTO forgottenPassDTO){
+            String email = forgottenPassDTO.getEmail();
+            String password = forgottenPassDTO.getNewpassword();
+            String confpassword = forgottenPassDTO.getConfnewpassword();
+            if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
+                throw new BadRequestExeption("You are already logged in.");
+            }
+
+            return userService.forgottenPassword(session,email,password,confpassword);
+        }
+
 //        @PostMapping(value = "/user/{id}/follow")
 //        public MessageDTO follow(@PathVariable("id") long id,HttpSession session){
 //            if(session.isNew()||session.getAttribute(LOGGED)==null){

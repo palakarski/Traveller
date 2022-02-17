@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Service
@@ -35,8 +36,8 @@ public class UserService {
         if(password == null|| password.isBlank()){
             throw  new BadRequestExeption("Password is mandatory");
         }
-        User u =userRepository.findByUsernameAndPassword(username,password);
-        if(u == null){
+        User u = userRepository.findByUsername(username);
+        if(u == null || !passwordEncoder.matches(password,u.getPassword())){
             throw new UnauthorizedExeption("Wrong credentials");
         }
         return u;
@@ -66,7 +67,7 @@ public class UserService {
             if(!password.equals(confpass)){
                 throw new BadRequestExeption("Passwords doesnt match");
             }
-            if(email.equals(userRepository.findByEmail(email).getEmail())){
+            if(userRepository.findByEmail(email)!=null){
                 throw new BadRequestExeption("Email is already taken");
             }
 
@@ -110,6 +111,20 @@ public class UserService {
         u.setPassword(passwordEncoder.encode(newpassword));
         userRepository.save(u);
         return new MessageDTO("Password was changed");
+    }
+
+    public MessageDTO forgottenPassword(HttpSession session, String email, String password, String repeatedNewPass) {
+            if(userRepository.findByEmail(email)==null){
+                throw new BadRequestExeption("We dont have user with this email");
+            }
+            if(!password.equals(repeatedNewPass)){
+                throw new BadRequestExeption("Password and confirm password doesnt match");
+            }
+            User u = userRepository.findByEmail(email);
+            u.setPassword(passwordEncoder.encode(password));
+            userRepository.save(u);
+            return new MessageDTO("Password was changed you can login now");
+
     }
 
 //    public MessageDTO follow(long userId, long id) {
