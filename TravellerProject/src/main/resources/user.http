@@ -1,0 +1,70 @@
+###
+GET http://localhost:8080/users/10
+###
+GET http://localhost:8080/users/find/pala123ewa
+###
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski122345115",
+  "birthDate":"1993-02-22",
+  "email":"palakarski1234256781",
+  "password":"12345678Ar!@",
+  "confpassword":"12345678Ar!@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+###
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+
+"username":"palakarski122345115",
+"password":"12345678Ar!@"
+
+}
+
+###
+POST http://localhost:8080/logout
+Content-Type: application/json
+
+{
+  "id" : 5,
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski122345",
+  "birthDate":"1993-02-22",
+  "email":"palakarski1234256",
+  "password":"12345678Ar!@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":false,
+  "gender":"f"
+}
+###
+PUT http://localhost:8080/changepass
+Content-Type: application/json
+
+{
+  "oldpassword" : "12345678Ar!@121",
+  "newpassword" : "12345678Ar!@12",
+  "confnewpassword" : "12345678Ar!@12"
+
+}
+
+###
+PUT http://localhost:8080/forgotten_password
+Content-Type: application/json
+
+{
+  "email" : "palakarski1234256",
+  "newpassword" : "12345678Ar!@12",
+  "confnewpassword" : "12345678Ar!@12"
+
+}
+
+###
+DELETE http://localhost:8080/delete

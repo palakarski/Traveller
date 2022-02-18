@@ -37,7 +37,7 @@ public class UserService {
             throw  new BadRequestExeption("Password is mandatory");
         }
         User u = userRepository.findByUsername(username);
-        if(u == null || !passwordEncoder.matches(password,u.getPassword())){
+        if(u == null && !passwordEncoder.matches(password,u.getPassword())){
             throw new UnauthorizedExeption("Wrong credentials");
         }
         return u;
@@ -81,7 +81,8 @@ public class UserService {
         public UserWithOutPassDTO getById(long id){
             Optional<User> u = userRepository.findById(id);
             if(u.isPresent()) {
-                return modelMapper.map(u.get(), UserWithOutPassDTO.class);
+                UserWithOutPassDTO userWithOutPassDTO = new UserWithOutPassDTO(u.get());
+                return userWithOutPassDTO;
             }
             else{
                 throw new NotFoundExeption("User not found");
@@ -90,8 +91,8 @@ public class UserService {
     public UserWithOutPassDTO getByUserName(String username){
         User u = userRepository.findByUsername(username);
         if(u!=null){
-            UserWithOutPassDTO user = modelMapper.map(u,UserWithOutPassDTO.class);
-            return user;
+            UserWithOutPassDTO userWithOutPassDTO = new UserWithOutPassDTO(u);
+            return userWithOutPassDTO;
         }
         else{
             throw new NotFoundExeption("User not found");

@@ -1,5 +1,6 @@
 package com.example.travellerproject.model.pojo;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,9 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Component
 @Getter
@@ -37,4 +41,8 @@ public class User {
     private boolean isAdmin;
     @Column
     private char gender;
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Post> posts = new ArrayList<>();
+
 }

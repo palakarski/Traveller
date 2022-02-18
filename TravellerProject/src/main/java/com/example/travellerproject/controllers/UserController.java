@@ -2,10 +2,7 @@ package com.example.travellerproject.controllers;
 
 import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.model.dto.MessageDTO;
-import com.example.travellerproject.model.dto.user.ChangePasswordDTO;
-import com.example.travellerproject.model.dto.user.ForgottenPassDTO;
-import com.example.travellerproject.model.dto.user.UserRegisterDTO;
-import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
+import com.example.travellerproject.model.dto.user.*;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -42,7 +39,7 @@ public class UserController {
             return  ResponseEntity.ok(userWithOutPassDTO);
         }
         @PostMapping(value = "/login")
-        public ResponseEntity<UserWithOutPassDTO> login(@RequestBody User user, HttpSession session){
+        public ResponseEntity<UserWithOutPassDTO> login(@RequestBody UserSignInDTO user, HttpSession session){
         String username = user.getUsername();
         String password = user.getPassword();
             if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
@@ -50,8 +47,8 @@ public class UserController {
             }
         User u = userService.login(username,password);
         session.setAttribute(LOGGED,u.getId());
-        UserWithOutPassDTO userWithOutPassDTO = modelMapper.map(u,UserWithOutPassDTO.class);
-        return  ResponseEntity.ok(userWithOutPassDTO);
+
+        return  ResponseEntity.ok(new UserWithOutPassDTO(u));
         }
         @PostMapping(value ="/logout")
         public MessageDTO logout(HttpSession session){

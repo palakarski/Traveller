@@ -1,0 +1,28 @@
+###
+GET http://localhost:8080/post/1
+###
+POST http://localhost:8080/post/create
+Content-Type: application/json
+
+{
+  "description":"",
+  "postCategory": 3,
+  "latitude":"212312",
+  "longitude": "12312",
+  "createdAt": "2022-02-02",
+  "title": "she mu eba maiakata"
+}
+###
+DELETE http://localhost:8080/delete/1
+###
+POST http://localhost:8080/post/1/edit
+Content-Type: application/json
+
+{
+  "description":"acascascas",
+  "postCategory": 3,
+  "latitude":"212312",
+  "longitude": "12312",
+  "createdAt": "2022-02-02",
+  "title": "she mu eba malallalalalalalaaiakata"
+}

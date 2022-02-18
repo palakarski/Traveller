@@ -1,5 +1,10 @@
 package com.example.travellerproject.model.dto.user;
 
+import com.example.travellerproject.model.dto.post.ResponsePostDTO;
+import com.example.travellerproject.model.dto.post.ResponseWithoutOwnerDTO;
+import com.example.travellerproject.model.pojo.Post;
+import com.example.travellerproject.model.pojo.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,4 +37,20 @@ public class UserWithOutPassDTO {
     @NotNull
     private LocalDateTime createdAt;
     private char gender;
+    @JsonManagedReference
+    List<ResponseWithoutOwnerDTO> posts = new ArrayList<>();
+    
+            public UserWithOutPassDTO(User user){
+                this.id = user.getId();
+                this.firstName = user.getFirstName();
+                this.lastName = user.getLastName();
+                this.username = user.getUsername();
+                this.birthDate = user.getBirthDate();
+                this.email = user.getEmail();
+                this.createdAt= user.getCreatedAt();
+                this.gender = user.getGender();
+                for (Post p : user.getPosts()) {
+                    posts.add(new ResponseWithoutOwnerDTO(p));
+                }
+            }
 }

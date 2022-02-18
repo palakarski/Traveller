@@ -13,12 +13,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ResponsePostDTO {
 
+public class ResponseWithoutOwnerDTO {
     @NotNull
     private long id;
-    @NotNull
-    private OwnerOfPostDTO user;
     private String description;
     @NotNull
     private PostCategory postCategory;
@@ -32,14 +30,13 @@ public class ResponsePostDTO {
     private String title;
 
 
-            public ResponsePostDTO(Post post){
-                this.id = post.getId();
-                this.user = new OwnerOfPostDTO(post.getUser());
-                this.description = post.getDescription();
-                this.postCategory = post.getPostCategory();
-                this.latitude = post.getLatitude();
-                this.longitude = post.getLongitude();
-                this.createdAt = post.getCreatedAt();
-                this.title = post.getTitle();
-            }
+    public ResponseWithoutOwnerDTO(Post post){
+        this.id = post.getId();
+        this.description = post.getDescription();
+        this.postCategory = post.getPostCategory();
+        this.latitude = post.getLatitude();
+        this.longitude = post.getLongitude();
+        this.createdAt = post.getCreatedAt();
+        this.title = post.getTitle();
+    }
 }

@@ -8,10 +8,12 @@ import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @RestController
 public class PostController {
@@ -22,12 +24,13 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @PostMapping(value = "/create")
+    @PostMapping(value = "post/create")
     public ResponseEntity<ResponsePostDTO> createPost(@RequestBody RequestPostDTO requestPostDTO, HttpSession session){
         if(session.isNew() || session.getAttribute(LOGGED)==null){
             throw new BadRequestExeption("You need to logged first");
         }
-        return ResponseEntity.ok(postService.createPost(requestPostDTO));
+        long id = (Long) session.getAttribute(LOGGED);
+        return ResponseEntity.ok(postService.createPost(requestPostDTO,id));
     }
     @DeleteMapping(value = "delete/{id}")
     public MessageDTO deletePost(@PathVariable long id,HttpSession session){
