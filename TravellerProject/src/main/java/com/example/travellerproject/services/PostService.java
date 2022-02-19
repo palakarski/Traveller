@@ -7,9 +7,7 @@ import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
 import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
-import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
 import com.example.travellerproject.model.pojo.Post;
-import com.example.travellerproject.model.pojo.PostCategory;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.PostCategotyRepository;
 import com.example.travellerproject.repositories.PostRepository;
@@ -100,7 +98,7 @@ public class PostService {
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
     }
-    public LikeDislikeMessageDTO likePost(long postId,long userId){
+    public LikeDislikeMessageDTO likePost(long postId, long userId){
         Post post = getPostById(postId);
         User user = getUserById(userId);
         if (user.getLikedPosts().contains(post)){

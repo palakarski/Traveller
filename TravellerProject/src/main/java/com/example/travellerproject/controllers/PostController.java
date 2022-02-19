@@ -60,7 +60,7 @@ public class PostController {
 
     //return type ?
     @PostMapping(value = "/posts/{id}/like")
-    public LikeDislikeMessageDTO likePost(@PathVariable long id,HttpSession session){
+    public LikeDislikeMessageDTO likePost(@PathVariable long id, HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.likePost(id,userId);
     }
@@ -72,7 +72,7 @@ public class PostController {
     }
 
     @PostMapping(value = "/posts/{id}/dislike")
-    public LikeDislikeMessageDTO dislikePost(@PathVariable long id,HttpSession session){
+    public LikeDislikeMessageDTO dislikePost(@PathVariable long id, HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.dislikePost(id,userId);
     }
