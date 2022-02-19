@@ -9,15 +9,18 @@ import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
 import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.PostCategory;
+import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.PostCategotyRepository;
 import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.repositories.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
-
+@Log4j2
 @Service
 public class PostService {
     @Autowired
@@ -28,25 +31,43 @@ public class PostService {
     private UserRepository userRepository;
     @Autowired
     private PostCategotyRepository postCategotyRepository;
-
-    public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userIOd){
+    public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userId) {
         long postCategoryId = requestPostDTO.getPostCategory();
-        if(requestPostDTO.getLatitude().isBlank()||
-        requestPostDTO.getLongitude().isBlank()||
-        requestPostDTO.getCreatedAt()==null||
-        requestPostDTO.getTitle().isBlank()){
+        if (requestPostDTO.getLatitude().isBlank() ||
+                requestPostDTO.getLongitude().isBlank() ||
+                requestPostDTO.getTitle().isBlank()) {
             throw new BadRequestExeption("Wrong declaration of the post");
         }
-        Post post = modelMapper.map(requestPostDTO,Post.class);
-        post.setPostCategory(postCategotyRepository.getById(postCategoryId));
-        post.setUser(userRepository.getById(userIOd));
+        Post post = modelMapper.map(requestPostDTO, Post.class);
+        post.setCreatedAt(LocalDate.now());
+        post.setPostCategory(postCategotyRepository.findById(postCategoryId).orElseThrow(() -> new NotFoundExeption("Post Category not found " + postCategoryId)));
+        post.setUser(userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found with id " + userId)));
         postRepository.save(post);
-        ResponsePostDTO responsePostDTO=modelMapper.map(post,ResponsePostDTO.class);
-        responsePostDTO.setUser(new OwnerOfPostDTO(userRepository.getById(userIOd)));
+        ResponsePostDTO responsePostDTO = modelMapper.map(post, ResponsePostDTO.class);
+        responsePostDTO.setUser(new OwnerOfPostDTO(userRepository.getById(userId)));
         //TODO location
-       return responsePostDTO;
-
+        return responsePostDTO;
     }
+
+//    public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userIOd){
+//        long postCategoryId = requestPostDTO.getPostCategory();
+//        if(requestPostDTO.getLatitude().isBlank()||
+//        requestPostDTO.getLongitude().isBlank()||
+//        requestPostDTO.getCreatedAt()==null||
+//        requestPostDTO.getTitle().isBlank()){
+//            throw new BadRequestExeption("Wrong declaration of the post");
+//        }
+//        Post post = modelMapper.map(requestPostDTO,Post.class);
+//        post.setPostCategory(postCategotyRepository.getById(postCategoryId));
+//        User u = userRepository.findById(userIOd).orElseThrow(() -> new BadRequestExeption("lelelele"));
+//        post.setUser(u);
+//        postRepository.save(post);
+//        ResponsePostDTO responsePostDTO=modelMapper.map(post,ResponsePostDTO.class);
+//        responsePostDTO.setUser(new OwnerOfPostDTO(userRepository.getById(userIOd)));
+//        //TODO location
+//       return responsePostDTO;
+//
+//    }
 
     public ResponsePostDTO getById(long id) {
         Optional<Post> post = postRepository.findById(id);

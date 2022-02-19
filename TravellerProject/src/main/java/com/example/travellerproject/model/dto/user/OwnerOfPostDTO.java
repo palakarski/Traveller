@@ -11,14 +11,14 @@ import lombok.Setter;
 public class OwnerOfPostDTO {
     private long id;
     private String username;
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
 
     public  OwnerOfPostDTO(User user){
         this.id = user.getId();
         this.username=user.getUsername();
-        this.firstname = user.getFirstName();
-        this.lastname =  user.getLastName();
+        this.firstName = user.getFirstName();
+        this.lastName =  user.getLastName();
 
     }
 }

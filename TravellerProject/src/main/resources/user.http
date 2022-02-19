@@ -1,19 +1,151 @@
-###
+### //Get User with id = 1
+GET http://localhost:8080/users/1
+### //Get User with id = 2
+GET http://localhost:8080/users/2
+### //Get User with id = 3
+GET http://localhost:8080/users/3
+### //Get User with id = 4
+GET http://localhost:8080/users/4
+### //Get User with id = 10
 GET http://localhost:8080/users/10
-###
-GET http://localhost:8080/users/find/pala123ewa
-###
+### //Get User with id = 11
+GET http://localhost:8080/users/11
+
+### //Get User with username = palakarski1/EXIST
+GET http://localhost:8080/users/find/palakarski1
+### //Get User with username = palakarsk2/EXIST
+GET http://localhost:8080/users/find/palakarski2
+### //Get User with username = palakarsk3/EXIST
+GET http://localhost:8080/users/find/palakarski3
+### //Get User with username = palakarsk4/EXIST
+GET http://localhost:8080/users/find/palakarski4
+### //Get User with username = palakarsk5/EXIST
+GET http://localhost:8080/users/find/palakarski5
+### //Get User with username = palakarsk6/NOT EXIST
+GET http://localhost:8080/users/find/palakarski6
+### //Get User with username = palakarsk7/NOT EXIST
+GET http://localhost:8080/users/find/palakarski7
+### //Get User with username = palakarsk8/NOT EXIST
+GET http://localhost:8080/users/find/palakarski8
+
+
+### //Valid Registration
 POST http://localhost:8080/register
 Content-Type: application/json
 
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarski122345115",
+  "username":"palakarski1",
   "birthDate":"1993-02-22",
-  "email":"palakarski1234256781",
-  "password":"12345678Ar!@",
-  "confpassword":"12345678Ar!@",
+  "email":"palakarski1",
+  "password":"palakarski1@",
+  "confpassword":"palakarski1@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":false
+}
+### //Valid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski2",
+  "birthDate":"1993-02-22",
+  "email":"palakarski2",
+  "password":"palakarski2@",
+  "confpassword":"palakarski2@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+### //Valid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski3",
+  "birthDate":"1993-02-22",
+  "email":"palakarski3",
+  "password":"palakarski3@",
+  "confpassword":"palakarski3@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+### //Valid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski4",
+  "birthDate":"1993-02-22",
+  "email":"palakarski4",
+  "password":"palakarski4@",
+  "confpassword":"palakarski4@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+### //Valid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski5",
+  "birthDate":"1993-02-22",
+  "email":"palakarski5",
+  "password":"palakarski5@",
+  "confpassword":"palakarski5@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+### //Unvalid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"",
+  "lastName":"Rangelov",
+  "username":"palakarski3",
+  "birthDate":"1993-02-22",
+  "email":"palakarski3",
+  "password":"palakarski3@",
+  "confpassword":"palakarski3@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+### //Unvalid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"",
+  "username":"palakarski4",
+  "birthDate":"1993-02-22",
+  "email":"palakarski4",
+  "password":"palakarski4@",
+  "confpassword":"palakarski4@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+}
+### //Unvalid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"",
+  "birthDate":"1993-02-22",
+  "email":"palakarski5",
+  "password":"palakarski5@",
+  "confpassword":"palakarski5@",
   "createdAt":"1993-02-22T00:00:00",
   "isAdmin":true
 }
@@ -23,8 +155,18 @@ Content-Type: application/json
 
 {
 
-"username":"palakarski122345115",
-"password":"12345678Ar!@"
+"username":"palakarski2",
+"password":"palakarski2@"
+
+}
+###
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+
+  "username":"palakarski1",
+  "password":"palakarski1@"
 
 }
 
@@ -49,9 +191,9 @@ PUT http://localhost:8080/changepass
 Content-Type: application/json
 
 {
-  "oldpassword" : "12345678Ar!@121",
-  "newpassword" : "12345678Ar!@12",
-  "confnewpassword" : "12345678Ar!@12"
+  "oldpassword" : "12345678Ar!@",
+  "newpassword" : "12345678Ar!@",
+  "confnewpassword" : "12345678Ar!@"
 
 }
 
@@ -68,3 +210,8 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:8080/delete
+
+###
+POST http://localhost:8080/user/3/follow
+###
+POST http://localhost:8080/user/3/unfollow

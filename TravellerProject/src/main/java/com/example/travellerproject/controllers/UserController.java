@@ -20,6 +20,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private SessionValidator sessionValidator;
 
         @GetMapping(value = "/users/{id}")
         public ResponseEntity<UserWithOutPassDTO> getById(@PathVariable long id){
@@ -42,48 +44,29 @@ public class UserController {
         public ResponseEntity<UserWithOutPassDTO> login(@RequestBody UserSignInDTO user, HttpSession session){
         String username = user.getUsername();
         String password = user.getPassword();
-            if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
-                throw new BadRequestExeption("You are already logged in.");
-            }
+        sessionValidator.isAlreadyLogged(session);
         User u = userService.login(username,password);
-        session.setAttribute(LOGGED,u.getId());
+        sessionValidator.userLogsIn(session,u.getId());
 
         return  ResponseEntity.ok(new UserWithOutPassDTO(u));
         }
         @PostMapping(value ="/logout")
         public MessageDTO logout(HttpSession session){
-            if(session.isNew() || session.getAttribute(LOGGED)==null){
-                throw new BadRequestExeption("You must be logged first");
-            }
-            session.setAttribute(LOGGED,null);
+            sessionValidator.isUserLogedIn(session);
+            sessionValidator.userLogsOut(session);
             return new MessageDTO("You have logged out");
 
         }
         @DeleteMapping (value = "/delete")
         public MessageDTO deleteAcc(HttpSession session){
-        if(session.isNew()||session.getAttribute(LOGGED)==null){
-            throw new BadRequestExeption("You need to be logged first");
-        }
-        long id = (Long)session.getAttribute(LOGGED);
+        long id = sessionValidator.isUserLogedIn(session);
         userService.deleteAcc(id);
         return new MessageDTO("Account has been deleted");
         }
         @PutMapping(value = "/changepass")
         public MessageDTO changePass(HttpSession session, @RequestBody ChangePasswordDTO changePasswordDTO){
-            String newpassword = changePasswordDTO.getNewpassword();
-            String confnewpassword = changePasswordDTO.getConfnewpassword();
-            String oldpassword = changePasswordDTO.getOldpassword();
-            if(session.isNew()||session.getAttribute(LOGGED)==null){
-                throw new BadRequestExeption("You need to be logged first");
-            }
-            long id = (Long)session.getAttribute(LOGGED);
-            if(!newpassword.equals(confnewpassword)){
-                throw new BadRequestExeption("Passwords need to match");
-            }
-            if(!newpassword.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
-                throw new BadRequestExeption("Password must contains at least 8 numbers and 2 charsequences");
-            }
-            return userService.changePassword(id,oldpassword,newpassword);
+            long id = sessionValidator.isUserLogedIn(session);
+            return userService.changePassword(id,changePasswordDTO);
 
         }
         @PutMapping(value = "/forgotten_password")
@@ -98,19 +81,23 @@ public class UserController {
             return userService.forgottenPassword(session,email,password,confpassword);
         }
 
-//        @PostMapping(value = "/user/{id}/follow")
-//        public MessageDTO follow(@PathVariable("id") long id,HttpSession session){
-//            if(session.isNew()||session.getAttribute(LOGGED)==null){
-//                throw new BadRequestExeption("You need to be logged first");
-//            }
-//            long userId = (Long)session.getAttribute(LOGGED);
-//            if(id==userId){
-//                throw new BadRequestExeption("You cant subscribe for your own profile");;
-//            }
-//            return userService.follow(userId,id);
-//
-//        }
+        @PostMapping(value = "/user/{id}/follow")
+        public MessageDTO follow(@PathVariable("id") long id,HttpSession session){
+            long userId = sessionValidator.isUserLogedIn(session);
+            if(id==userId){
+                throw new BadRequestExeption("You cant subscribe for your own profile");
+            }
+            return userService.follow(userId,id);
 
+        }
+        @PostMapping(value = "/user/{id}/unfollow")
+        public MessageDTO unfollow(@PathVariable("id") long id,HttpSession session){
+            long userId = sessionValidator.isUserLogedIn(session);
+            if(id==userId){
+                throw new BadRequestExeption("You cant unsubscribe for your own profile");
+            }
+            return userService.unfollow(userId,id);
 
+        }
 
 }

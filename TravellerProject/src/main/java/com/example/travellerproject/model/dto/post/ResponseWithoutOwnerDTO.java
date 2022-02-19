@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class ResponseWithoutOwnerDTO {
     @NotNull
     private long id;
+
     private String description;
     @NotNull
     private PostCategory postCategory;

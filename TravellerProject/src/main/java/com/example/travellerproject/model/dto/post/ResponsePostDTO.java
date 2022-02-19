@@ -19,6 +19,7 @@ public class ResponsePostDTO {
     private long id;
     @NotNull
     private OwnerOfPostDTO user;
+
     private String description;
     @NotNull
     private PostCategory postCategory;
