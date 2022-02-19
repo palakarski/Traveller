@@ -26,3 +26,12 @@ Content-Type: application/json
   "createdAt": "2022-02-02",
   "title": "she mu eba malallalalalalalaaiakata"
 }
+###
+POST http://localhost:8080/posts/2/like
+###
+POST http://localhost:8080/posts/2/undoLike
+###
+POST http://localhost:8080/posts/2/dislike
+###
+POST http://localhost:8080/posts/2/undoDislike
+

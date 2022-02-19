@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Component
@@ -58,6 +59,20 @@ public class Post {
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            //rename table usesr --> users_like_posts
+            name = "usesr_like_posts",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> likers;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_dislike_posts",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> dislikers;
 
 
 }

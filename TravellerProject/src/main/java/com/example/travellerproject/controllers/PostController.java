@@ -1,19 +1,17 @@
 package com.example.travellerproject.controllers;
 
 import com.example.travellerproject.exeptions.BadRequestExeption;
+import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
-import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 @RestController
 public class PostController {
@@ -23,6 +21,9 @@ public class PostController {
     private ModelMapper modelMapper;
     @Autowired
     private PostService postService;
+    @Autowired
+    private SessionValidator sessionValidator;
+
 
     @PostMapping(value = "post/create")
     public ResponseEntity<ResponsePostDTO> createPost(@RequestBody RequestPostDTO requestPostDTO, HttpSession session){
@@ -32,6 +33,8 @@ public class PostController {
         long id = (Long) session.getAttribute(LOGGED);
         return ResponseEntity.ok(postService.createPost(requestPostDTO,id));
     }
+
+
     @DeleteMapping(value = "delete/{id}")
     public MessageDTO deletePost(@PathVariable long id,HttpSession session){
         if(session.isNew() || session.getAttribute(LOGGED)==null){
@@ -53,6 +56,31 @@ public class PostController {
         }
         long userId = (Long)session.getAttribute(LOGGED);
         return ResponseEntity.ok(postService.editPost(requestPostDTO,id,userId));
+    }
+
+    //return type ?
+    @PostMapping(value = "/posts/{id}/like")
+    public LikeDislikeMessageDTO likePost(@PathVariable long id,HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.likePost(id,userId);
+    }
+
+    @PostMapping(value = "/posts/{id}/undoLike")
+    public LikeDislikeMessageDTO undoLikePost(@PathVariable long id, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.undoLikePost(id,userId);
+    }
+
+    @PostMapping(value = "/posts/{id}/dislike")
+    public LikeDislikeMessageDTO dislikePost(@PathVariable long id,HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.dislikePost(id,userId);
+    }
+
+    @PostMapping(value = "/posts/{id}/undoDislike")
+    public LikeDislikeMessageDTO undoDislikePost(@PathVariable long id, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.undoDislikePost(id,userId);
     }
 
 }

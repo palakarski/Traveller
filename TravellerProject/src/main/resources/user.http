@@ -191,9 +191,9 @@ PUT http://localhost:8080/changepass
 Content-Type: application/json
 
 {
-  "oldpassword" : "12345678Ar!@",
-  "newpassword" : "12345678Ar!@",
-  "confnewpassword" : "12345678Ar!@"
+  "oldpassword" : "palakarski1@",
+  "newpassword" : "palakarski1@",
+  "confnewpassword" : "palakarski1@"
 
 }
 

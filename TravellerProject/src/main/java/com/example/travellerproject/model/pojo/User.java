@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Component
@@ -73,4 +74,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Comment> comments ;
+
+    @ManyToMany(mappedBy = "likers")
+    private Set<Post> likedPosts;
+
+    @ManyToMany(mappedBy = "dislikers")
+    private Set<Post> dislikedPosts;
 }
