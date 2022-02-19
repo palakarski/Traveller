@@ -84,4 +84,10 @@ public class User {
     @ManyToMany(mappedBy = "dislikers")
     private Set<Post> dislikedPosts;
 
+    @ManyToMany(mappedBy = "commentLikers")
+    private Set<Comment> likedComments;
+
+    @ManyToMany(mappedBy = "commentDislikers")
+    private Set<Comment> dislikedComments;
+
 }

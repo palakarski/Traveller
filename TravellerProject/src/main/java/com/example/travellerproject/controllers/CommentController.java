@@ -1,6 +1,7 @@
 package com.example.travellerproject.controllers;
 
 import com.example.travellerproject.exeptions.BadRequestExeption;
+import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.comment.CommentRequestDTO;
 import com.example.travellerproject.model.dto.comment.CommentResponseDTO;
@@ -42,5 +43,31 @@ public class CommentController {
     public ResponseEntity<CommentResponseDTO> editComment(@RequestBody CommentRequestDTO commentRequestDTO,@PathVariable long id, HttpSession session){
         long userId=sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(commentService.editComment(commentRequestDTO,id,userId));
+    }
+    //byIvan
+    //return type all has to be checked
+    //url check
+    @PostMapping(value = "/comments/{id}/like")
+    public LikeDislikeMessageDTO likePost(@PathVariable long id, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return commentService.likeComment(id,userId);
+    }
+
+    @PostMapping(value = "/comments/{id}/undoLike")
+    public LikeDislikeMessageDTO undoLikePost(@PathVariable long id, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return commentService.undoLikeComment(id,userId);
+    }
+
+    @PostMapping(value = "/comments/{id}/dislike")
+    public LikeDislikeMessageDTO dislikeComment(@PathVariable long id, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return commentService.dislikeComment(id,userId);
+    }
+
+    @PostMapping(value = "/comments/{id}/undoDislike")
+    public LikeDislikeMessageDTO undoDislikeComment(@PathVariable long id, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return commentService.undoDislikeComment(id,userId);
     }
 }

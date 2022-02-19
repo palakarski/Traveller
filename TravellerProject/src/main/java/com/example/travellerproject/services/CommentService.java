@@ -3,6 +3,7 @@ package com.example.travellerproject.services;
 import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.exeptions.NotFoundExeption;
 import com.example.travellerproject.exeptions.UnauthorizedExeption;
+import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.comment.CommentRequestDTO;
 import com.example.travellerproject.model.dto.comment.CommentResponseDTO;
@@ -76,5 +77,61 @@ public class CommentService {
         commentResponseDTO.setOwnerOfPostDTO(modelMapper.map(comment.getUser(),OwnerOfPostDTO.class));
         commentResponseDTO.setResponsePostDTO(modelMapper.map(comment.getPost(),ResponsePostDTO.class));
         return commentResponseDTO;
+    }
+
+    //ByIvan
+    public LikeDislikeMessageDTO likeComment(long commentId, long userId){
+       Comment comment = getCommentById(commentId);
+        User user = getUserById(userId);
+        if (user.getLikedComments().contains(comment)){
+            throw new BadRequestExeption("You have already liked this comment");
+        }
+        comment.getCommentLikers().add(user);
+        commentRepository.save(comment);
+        return new LikeDislikeMessageDTO("You have liked a comment",comment.getCommentLikers().size());
+    }
+
+    public LikeDislikeMessageDTO undoLikeComment(long commentId, long userId){
+        Comment comment = getCommentById(commentId);
+        User user = getUserById(userId);
+        if (!user.getLikedComments().contains(comment)){
+            throw new BadRequestExeption("You have to like the comment before removing like");
+        }
+        comment.getCommentLikers().remove(user);
+        commentRepository.save(comment);
+        return new LikeDislikeMessageDTO("You have undid your like ",comment.getCommentLikers().size());
+    }
+
+
+    public LikeDislikeMessageDTO dislikeComment(long commentId, long userId){
+        Comment comment = getCommentById(commentId);
+        User user = getUserById(userId);
+        if (user.getDislikedComments().contains(comment)){
+            throw new BadRequestExeption("You have already disliked this comment");
+        }
+        comment.getCommentDislikers().add(user);
+        commentRepository.save(comment);
+        return new LikeDislikeMessageDTO("You have disliked a comment",comment.getCommentDislikers().size());
+    }
+
+
+    public LikeDislikeMessageDTO undoDislikeComment(long commentId, long userId){
+        Comment comment = getCommentById(commentId);
+        User user = getUserById(userId);
+        if (!user.getDislikedComments().contains(comment)){
+            throw new BadRequestExeption("You have to dislike the comment before removing dislike");
+        }
+        comment.getCommentDislikers().remove(user);
+        commentRepository.save(comment);
+        return new LikeDislikeMessageDTO("You have undid your dislike",comment.getCommentDislikers().size());
+    }
+
+
+    private User getUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
+    }
+
+    private Comment getCommentById(long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(()->new NotFoundExeption("Comment not found"));
     }
 }

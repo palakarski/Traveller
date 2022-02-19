@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
+
 @Entity
 @Component
 @Getter
@@ -31,5 +33,19 @@ public class Comment {
     private LocalDate createdAt;
     @Column
     private String text;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_like_comments",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> commentLikers;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_dislike_comments",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> commentDislikers;
 
 }

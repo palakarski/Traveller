@@ -170,6 +170,5 @@ public class PostService {
             posts.add(modelMapper.map(e,ResponsePostDTO.class));
         }
         return posts;
-
     }
 }
