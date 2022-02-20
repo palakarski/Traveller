@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 @Log4j2
 @Service
@@ -49,7 +51,12 @@ public class UserService {
             String username =  dto.getUsername();
             String password = dto.getPassword();
             String confpass = dto.getConfpassword();
+            String firstname = dto.getFirstName();
+            String lastname = dto.getLastName();
+            LocalDate date = dto.getBirthDate();
+            LocalDateTime createdAt = dto.getCreatedAt();
             String email = dto.getEmail();
+            //TODO register more validation
             if(username == null || username.isBlank()){
                 throw new BadRequestExeption("Username is mandatory");
             }
@@ -62,7 +69,10 @@ public class UserService {
             if(userRepository.findByUsername(username)!=null){
                 throw new BadRequestExeption("Username is already taken.");
             }
-            //TODO
+            if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new BadRequestExeption("Wrong email.");
+            }
+
             if(!password.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
                 throw new BadRequestExeption("Password must contains at least 8 numbers and 2 charsequences");
             }

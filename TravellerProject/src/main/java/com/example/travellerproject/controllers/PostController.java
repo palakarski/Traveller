@@ -4,6 +4,7 @@ import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
+import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.services.PostService;
 import org.modelmapper.ModelMapper;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class PostController {
@@ -23,6 +25,8 @@ public class PostController {
     private ModelMapper modelMapper;
     @Autowired
     private PostService postService;
+    @Autowired
+    private SessionValidator sessionValidator;
 
     @PostMapping(value = "post/create")
     public ResponseEntity<ResponsePostDTO> createPost(@RequestBody RequestPostDTO requestPostDTO, HttpSession session){
@@ -53,6 +57,29 @@ public class PostController {
         }
         long userId = (Long)session.getAttribute(LOGGED);
         return ResponseEntity.ok(postService.editPost(requestPostDTO,id,userId));
+    }
+    @PostMapping(value = "/post/{pId}/tag/{id}")
+    public MessageDTO tagUser(@PathVariable long pId ,@PathVariable long id,HttpSession session){
+        if(session.isNew() || session.getAttribute(LOGGED)==null){
+            throw new BadRequestExeption("You need to logged first");
+        }
+        long userId = (Long)session.getAttribute(LOGGED);
+        return postService.tagUser(userId,id,pId);
+    }
+
+    @PostMapping(value = "/post/{pId}/untag/{id}")
+    public MessageDTO unTagUser(@PathVariable long pId ,@PathVariable long id,HttpSession session){
+        if(session.isNew() || session.getAttribute(LOGGED)==null){
+            throw new BadRequestExeption("You need to logged first");
+        }
+        long userId = (Long)session.getAttribute(LOGGED);
+        return postService.unTagUser(userId,id,pId);
+    }
+
+    @GetMapping(value = "post/search/{username}")
+    public List<ResponsePostDTO> findAllPostOfUser(@PathVariable String username, HttpSession session){
+        sessionValidator.isUserLoged(session);
+        return postService.findPosts(username);
     }
 
 }

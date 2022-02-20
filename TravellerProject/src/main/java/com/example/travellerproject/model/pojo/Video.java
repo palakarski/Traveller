@@ -20,5 +20,5 @@ public class Video {
     @JoinColumn(name = "post_id")
     private Post post;
     @Column(name = "file")
-    private String fileUrl;
+    private String filename;
 }

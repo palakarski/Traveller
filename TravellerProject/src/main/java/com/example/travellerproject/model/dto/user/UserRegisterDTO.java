@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Getter
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Component
 public class UserRegisterDTO {
-    @NotNull
+    @NotBlank(message = "empty firstname")
     private String firstName;
     @NotNull
     private String lastName;

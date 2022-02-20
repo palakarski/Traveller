@@ -58,6 +58,20 @@ public class Post {
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post")
+    @JsonManagedReference
+    private List<Image> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post")
+    @JsonManagedReference
+    private List<Video> videos = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name ="users_tag_at_posts",
+            joinColumns = {@JoinColumn (name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name="user_id")}
+    )
+    private List<User> userTagAtPosts ;
 
 }

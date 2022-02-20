@@ -73,4 +73,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Comment> comments ;
+
+    @ManyToMany(mappedBy ="userTagAtPosts" )
+    private List<Post> tagsAtPosts;
 }

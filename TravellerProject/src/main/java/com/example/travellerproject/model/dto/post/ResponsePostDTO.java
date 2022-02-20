@@ -1,6 +1,7 @@
 package com.example.travellerproject.model.dto.post;
 
 import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
+import com.example.travellerproject.model.pojo.Image;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.PostCategory;
 import com.sun.istack.NotNull;
@@ -10,6 +11,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,6 +34,7 @@ public class ResponsePostDTO {
     private LocalDate createdAt;
     @NotNull
     private String title;
+    private List<Image> images;
 
 
             public ResponsePostDTO(Post post){
@@ -42,5 +46,6 @@ public class ResponsePostDTO {
                 this.longitude = post.getLongitude();
                 this.createdAt = post.getCreatedAt();
                 this.title = post.getTitle();
+                this.images=post.getImages();
             }
 }

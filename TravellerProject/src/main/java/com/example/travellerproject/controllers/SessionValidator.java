@@ -11,6 +11,11 @@ public class SessionValidator {
 
     private static final String LOGGED = "logged";
 
+    public void isUserLoged(HttpSession session){
+        if(session.isNew() || session.getAttribute(LOGGED)==null){
+            throw new UnauthorizedExeption("You must be logged first");
+        }
+    }
 
     public long isUserLogedIn (HttpSession session){
         if(session.isNew() || session.getAttribute(LOGGED)==null){

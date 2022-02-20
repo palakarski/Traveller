@@ -37,6 +37,7 @@ public class UserWithOutPassDTO {
     @NotNull
     private LocalDateTime createdAt;
     private char gender;
+    private boolean isAdmin;
     @JsonManagedReference
     List<ResponseWithoutOwnerDTO> posts = new ArrayList<>();
     
@@ -52,5 +53,6 @@ public class UserWithOutPassDTO {
                 for (Post p : user.getPosts()) {
                     posts.add(new ResponseWithoutOwnerDTO(p));
                 }
+                this.isAdmin = user.isAdmin();
             }
 }

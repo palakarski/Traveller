@@ -96,24 +96,24 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarski5",
+  "username":"palakarskai5a3s2s21",
   "birthDate":"1993-02-22",
-  "email":"palakarski5",
+  "email":"palakarskia5@сsadddda",
   "password":"palakarski5@",
   "confpassword":"palakarski5@",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
+  "admin":false
 }
 ### //Unvalid Registration
 POST http://localhost:8080/register
 Content-Type: application/json
 
 {
-  "firstName":"",
+
   "lastName":"Rangelov",
-  "username":"palakarski3",
+  "username":"palakarski312",
   "birthDate":"1993-02-22",
-  "email":"palakarski3",
+  "email":"palakarsk1i32@mail.bg",
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
@@ -126,9 +126,9 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"",
-  "username":"palakarski4",
+  "username":"palakarski42",
   "birthDate":"1993-02-22",
-  "email":"palakarski4",
+  "email":"palakarski@gmail.com",
   "password":"palakarski4@",
   "confpassword":"palakarski4@",
   "createdAt":"1993-02-22T00:00:00",
@@ -191,9 +191,9 @@ PUT http://localhost:8080/changepass
 Content-Type: application/json
 
 {
-  "oldpassword" : "12345678Ar!@",
-  "newpassword" : "12345678Ar!@",
-  "confnewpassword" : "12345678Ar!@"
+  "oldpassword" : "palakarski1@",
+  "newpassword" : "palakarski1@",
+  "confnewpassword" : "palakarski1@"
 
 }
 

@@ -2,6 +2,7 @@ package com.example.travellerproject.services;
 
 import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.exeptions.NotFoundExeption;
+import com.example.travellerproject.exeptions.UnauthorizedExeption;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 @Log4j2
 @Service
@@ -48,26 +51,6 @@ public class PostService {
         //TODO location
         return responsePostDTO;
     }
-
-//    public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userIOd){
-//        long postCategoryId = requestPostDTO.getPostCategory();
-//        if(requestPostDTO.getLatitude().isBlank()||
-//        requestPostDTO.getLongitude().isBlank()||
-//        requestPostDTO.getCreatedAt()==null||
-//        requestPostDTO.getTitle().isBlank()){
-//            throw new BadRequestExeption("Wrong declaration of the post");
-//        }
-//        Post post = modelMapper.map(requestPostDTO,Post.class);
-//        post.setPostCategory(postCategotyRepository.getById(postCategoryId));
-//        User u = userRepository.findById(userIOd).orElseThrow(() -> new BadRequestExeption("lelelele"));
-//        post.setUser(u);
-//        postRepository.save(post);
-//        ResponsePostDTO responsePostDTO=modelMapper.map(post,ResponsePostDTO.class);
-//        responsePostDTO.setUser(new OwnerOfPostDTO(userRepository.getById(userIOd)));
-//        //TODO location
-//       return responsePostDTO;
-//
-//    }
 
     public ResponsePostDTO getById(long id) {
         Optional<Post> post = postRepository.findById(id);
@@ -100,6 +83,46 @@ public class PostService {
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
 
+
+    }
+
+    public MessageDTO tagUser(long userId, long id, long pId) {
+        Post post = postRepository.findById(pId).orElseThrow(() -> new NotFoundExeption("Post not found."));
+        User tagedUser = userRepository.findById(id).orElseThrow(() -> new NotFoundExeption("User not found"));
+        if(post.getUserTagAtPosts().contains(tagedUser)){
+            throw new BadRequestExeption("This user is already tagged in this post");
+        }
+        post.getUserTagAtPosts().add(tagedUser);
+        postRepository.save(post);
+        return new MessageDTO("You have tagged " + id);
+    }
+    public MessageDTO unTagUser(long userId, long id, long pId) {
+        Post post = postRepository.findById(pId).orElseThrow(() -> new NotFoundExeption("Post not found."));
+        User tagedUser = userRepository.findById(id).orElseThrow(() -> new NotFoundExeption("User not found"));
+        if(userId!=post.getUser().getId()){
+            throw new UnauthorizedExeption("You can't untag this user,because you aren't the owner of the post");
+        }
+        if(!post.getUserTagAtPosts().contains(tagedUser)){
+            throw new BadRequestExeption("This user isn't tagged in this post");
+        }
+        post.getUserTagAtPosts().remove(tagedUser);
+        postRepository.save(post);
+        return new MessageDTO("You have untagged " + id);
+    }
+
+    public List<ResponsePostDTO> findPosts(String username) {
+        User user = userRepository.findByUsername(username);
+        if(user==null){
+            throw new NotFoundExeption("User not found");
+        }
+        if(user.getPosts().isEmpty()){
+            throw  new BadRequestExeption("This user don't have posts ");
+        }
+        List<ResponsePostDTO> posts =  new ArrayList<>();
+        for (Post e : user.getPosts()) {
+            posts.add(modelMapper.map(e,ResponsePostDTO.class));
+        }
+        return posts;
 
     }
 }
