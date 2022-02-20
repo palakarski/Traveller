@@ -1,15 +1,13 @@
 package com.example.travellerproject.services;
-
 import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.exeptions.NotFoundExeption;
 import com.example.travellerproject.exeptions.UnauthorizedExeption;
+import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
 import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
-import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
 import com.example.travellerproject.model.pojo.Post;
-import com.example.travellerproject.model.pojo.PostCategory;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.PostCategotyRepository;
 import com.example.travellerproject.repositories.PostRepository;
@@ -71,7 +69,6 @@ public class PostService {
         else{
             throw new BadRequestExeption("Post doesnt exist");
         }
-
     }
 
     public ResponsePostDTO editPost(RequestPostDTO requestPostDTO, long id,long userId) {
@@ -82,8 +79,58 @@ public class PostService {
         modelMapper.map(requestPostDTO,post);
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
+    }
+    public LikeDislikeMessageDTO likePost(long postId, long userId){
+        Post post = getPostById(postId);
+        User user = getUserById(userId);
+        if (user.getLikedPosts().contains(post)){
+            throw new BadRequestExeption("You have already liked this post");
+        }
+        post.getLikers().add(user);
+        postRepository.save(post);
+        return new LikeDislikeMessageDTO("You have liked a post",post.getLikers().size());
+    }
+
+    public LikeDislikeMessageDTO undoLikePost(long postId, long userId){
+        Post post = getPostById(postId);
+        User user = getUserById(userId);
+        if (!user.getLikedPosts().contains(post)){
+            throw new BadRequestExeption("You have to like the post before removing like");
+        }
+        post.getLikers().remove(user);
+        postRepository.save(post);
+        return new LikeDislikeMessageDTO("You have undid your like  ",post.getLikers().size());
+    }
+
+    public LikeDislikeMessageDTO dislikePost(long postId, long userId){
+        Post post = getPostById(postId);
+        User user = getUserById(userId);
+        if (user.getDislikedPosts().contains(post)){
+            throw new BadRequestExeption("You have already disliked this post");
+        }
+        post.getDislikers().add(user);
+        postRepository.save(post);
+        return new LikeDislikeMessageDTO("You have disliked a post ",post.getDislikers().size());
+    }
+
+    public LikeDislikeMessageDTO undoDislikePost(long postId, long userId){
+        Post post = getPostById(postId);
+        User user = getUserById(userId);
+        if (!user.getDislikedPosts().contains(post)){
+            throw new BadRequestExeption("You have to dislike the post before removing dislike");
+        }
+        post.getDislikers().remove(user);
+        postRepository.save(post);
+        return new LikeDislikeMessageDTO("You have undid your dislike  ",post.getDislikers().size());
+    }
 
 
+    private User getUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
+    }
+
+    private Post getPostById(long postId) {
+        return postRepository.findById(postId).orElseThrow(()->new NotFoundExeption("Post not found"));
     }
 
     public MessageDTO tagUser(long userId, long id, long pId) {

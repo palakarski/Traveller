@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Component
@@ -76,4 +77,11 @@ public class User {
 
     @ManyToMany(mappedBy ="userTagAtPosts" )
     private List<Post> tagsAtPosts;
+
+    @ManyToMany(mappedBy = "likers")
+    private Set<Post> likedPosts;
+
+    @ManyToMany(mappedBy = "dislikers")
+    private Set<Post> dislikedPosts;
+
 }
