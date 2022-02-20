@@ -212,6 +212,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/delete
 
 ###
-POST http://localhost:8080/user/3/follow
+POST http://localhost:8080/user/2/follow
 ###
 POST http://localhost:8080/user/3/unfollow
+
