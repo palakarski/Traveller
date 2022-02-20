@@ -7,10 +7,10 @@ Content-Type: application/json
 {
   "description":"",
   "postCategory": 3,
-  "latitude":"212312",
-  "longitude": "12312",
+  "latitude":"-90.9123",
+  "longitude": "180",
   "createdAt": "2022-02-02",
-  "title": "she mu eba maiakata"
+  "title": "Mnogo qk proekt.Zavijdaite"
 }
 ###
 DELETE http://localhost:8080/delete/1

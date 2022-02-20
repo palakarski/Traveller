@@ -35,7 +35,8 @@ public class UserController {
 
 
         @PostMapping(value = "/register")
-        public ResponseEntity<UserWithOutPassDTO> register(@RequestBody UserRegisterDTO user){
+        public ResponseEntity<UserWithOutPassDTO> register(@RequestBody UserRegisterDTO user,HttpSession session){
+            sessionValidator.isAlreadyLogged(session);
             User u = userService.register(user);
             UserWithOutPassDTO userWithOutPassDTO = modelMapper.map(u,UserWithOutPassDTO.class);
             return  ResponseEntity.ok(userWithOutPassDTO);
@@ -82,7 +83,7 @@ public class UserController {
         }
 
         @PostMapping(value = "/user/{id}/follow")
-        public MessageDTO follow(@PathVariable("id") long id,HttpSession session){
+        public MessageDTO follow(@PathVariable long id,HttpSession session){
             long userId = sessionValidator.isUserLogedIn(session);
             if(id==userId){
                 throw new BadRequestExeption("You cant subscribe for your own profile");
