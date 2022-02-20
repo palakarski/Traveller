@@ -27,9 +27,9 @@ Content-Type: application/json
   "title": "she mu eba malallalalalalalaaiakata"
 }
 ###
-POST http://localhost:8080/posts/2/like
+POST http://localhost:8080/posts/8/like
 ###
-POST http://localhost:8080/posts/2/undoLike
+POST http://localhost:8080/posts/7/undoLike
 ###
 POST http://localhost:8080/posts/2/dislike
 ###
@@ -38,5 +38,13 @@ POST http://localhost:8080/posts/2/undoDislike
 GET http://localhost:8080/posts/newsfeed/category
 ###
 GET http://localhost:8080/posts/newsfeed/date
+###
+GET http://localhost:8080/posts/newsfeed/like
+###
+GET http://localhost:8080/posts/allForeignPosts/category
+###
+GET http://localhost:8080/posts/allForeignPosts/date
+###
+GET http://localhost:8080/posts/allForeignPosts/like
 
 
