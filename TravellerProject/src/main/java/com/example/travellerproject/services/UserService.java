@@ -37,6 +37,7 @@ public class UserService {
             if(username== null || username.isBlank()){
              throw new BadRequestExeption("Username is mandatory");
             }
+
             if(password == null|| password.isBlank()){
                 throw  new BadRequestExeption("Password is mandatory");
             }

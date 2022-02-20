@@ -31,43 +31,33 @@ public class PostController {
 
     @PostMapping(value = "post/create")
     public ResponseEntity<ResponsePostDTO> createPost(@RequestBody RequestPostDTO requestPostDTO, HttpSession session){
-        if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new BadRequestExeption("You need to logged first");
-        }
+        sessionValidator.isUserLoged(session);
         long id = (Long) session.getAttribute(LOGGED);
         return ResponseEntity.ok(postService.createPost(requestPostDTO,id));
     }
 
-
     @DeleteMapping(value = "delete/{id}")
     public MessageDTO deletePost(@PathVariable long id,HttpSession session){
-        if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new BadRequestExeption("You need to logged first");
-        }
+        sessionValidator.isUserLoged(session);
         return postService.deletePost(id);
     }
+
     @GetMapping(value = "/post/{id}")
     public ResponseEntity<ResponsePostDTO> getPostById(@PathVariable long id,HttpSession session){
-        if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new BadRequestExeption("You need to logged first");
-        }
+       sessionValidator.isUserLoged(session);
         return ResponseEntity.ok(postService.getById(id));
     }
+
     @PostMapping(value ="/post/{id}/edit")
     public ResponseEntity<ResponsePostDTO> editPost(@RequestBody RequestPostDTO requestPostDTO,@PathVariable long id,HttpSession session){
-        if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new BadRequestExeption("You need to logged first");
-        }
-        long userId = (Long)session.getAttribute(LOGGED);
+        long userId = sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(postService.editPost(requestPostDTO,id,userId));
     }
-    @PostMapping(value = "/post/{pId}/tag/{id}")
-    public MessageDTO tagUser(@PathVariable long pId ,@PathVariable long id,HttpSession session){
-        if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new BadRequestExeption("You need to logged first");
-        }
-        long userId = (Long)session.getAttribute(LOGGED);
-        return postService.tagUser(userId,id,pId);
+
+    @PostMapping(value = "/post/{pId}/tag/{tagedUId}")
+    public MessageDTO tagUser(@PathVariable long pId ,@PathVariable long tagedUId,HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.tagUser(userId,tagedUId,pId);
     }
 
     @PostMapping(value = "/post/{pId}/untag/{id}")
