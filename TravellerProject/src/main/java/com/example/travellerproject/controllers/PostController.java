@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.TreeSet;
 
 
 @RestController
@@ -98,6 +99,12 @@ public class PostController {
     public LikeDislikeMessageDTO undoDislikePost(@PathVariable long id, HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.undoDislikePost(id,userId);
+    }
+
+    @GetMapping(value = "/posts/newsfeed")
+    public TreeSet<ResponsePostDTO> getNewsfeed(HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getNewsfeed(userId);
     }
 
 }

@@ -160,7 +160,7 @@ public class UserService {
             }
             subcriber.getFollowedUsers().add(subscribedFor);
             userRepository.save(subcriber);
-            return new MessageDTO("You haved subscribe for " + subscribedFor);
+            return new MessageDTO("You have subscribe for " + subscribedFor);
         }
 
     public MessageDTO unfollow(long userId, long id) {
@@ -171,6 +171,6 @@ public class UserService {
         }
         subcriber.getFollowedUsers().remove(subscribedFor);
         userRepository.save(subcriber);
-        return new MessageDTO("You haved unsubscribe for " + subscribedFor);
+        return new MessageDTO("You have unsubscribe for " + subscribedFor);
     }
 }

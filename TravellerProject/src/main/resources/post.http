@@ -34,4 +34,6 @@ POST http://localhost:8080/posts/2/undoLike
 POST http://localhost:8080/posts/2/dislike
 ###
 POST http://localhost:8080/posts/2/undoDislike
+###
+GET http://localhost:8080/posts/newsfeed
 

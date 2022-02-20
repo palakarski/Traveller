@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
+
 @Log4j2
 @Service
 public class PostService {
@@ -171,4 +173,20 @@ public class PostService {
         }
         return posts;
     }
+
+    public TreeSet<ResponsePostDTO> getNewsfeed(long userId){
+        User user = userRepository.getById(userId);
+        if(user.getFollowedUsers().isEmpty()){
+            throw  new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+        }
+        //nz dali taka e pravilno da se sortirat
+        TreeSet<ResponsePostDTO> newsfeed = new TreeSet<>((post1,post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+        for (User currUser : user.getFollowedUsers()){
+           for(Post post : currUser.getPosts()){
+               newsfeed.add(modelMapper.map(post,ResponsePostDTO.class));
+           }
+        }
+        return  newsfeed;
+    }
+
 }
