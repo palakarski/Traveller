@@ -61,6 +61,7 @@ public class Post {
 
 
     @ManyToMany
+    @JsonManagedReference
     @JoinTable(
             //rename table usesr --> users_like_posts
             name = "usesr_like_posts",
@@ -68,12 +69,15 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> likers;
 
+
+
     @ManyToMany
     @JoinTable(
             name = "users_dislike_posts",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> dislikers;
+
 
 
     @OneToMany(mappedBy = "post")
@@ -86,6 +90,7 @@ public class Post {
     private List<Video> videos = new ArrayList<>();
 
     @ManyToMany
+    //jsonmanagedref
     @JoinTable(
             name ="users_tag_at_posts",
             joinColumns = {@JoinColumn (name = "post_id")},

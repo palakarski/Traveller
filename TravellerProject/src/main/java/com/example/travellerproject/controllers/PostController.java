@@ -111,10 +111,10 @@ public class PostController {
         return postService.undoDislikePost(id,userId);
     }
 
-    @GetMapping(value = "/posts/newsfeed")
-    public TreeSet<ResponsePostDTO> getNewsfeed(HttpSession session){
+    @GetMapping(value = "/posts/newsfeed/{filterName}")
+    public List<ResponsePostDTO> getNewsfeed(@PathVariable String filterName, HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
-        return postService.getNewsfeed(userId);
+        return postService.getNewsfeed(userId,filterName);
     }
 
 }
