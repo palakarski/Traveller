@@ -3,13 +3,16 @@ package com.example.travellerproject.services;
 import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.exeptions.NotFoundExeption;
 import com.example.travellerproject.exeptions.UnauthorizedExeption;
+import com.example.travellerproject.model.pojo.Comment;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.PostCategory;
 import com.example.travellerproject.model.pojo.User;
+import com.example.travellerproject.repositories.CommentRepository;
 import com.example.travellerproject.repositories.PostCategotyRepository;
 import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -23,6 +26,10 @@ public class Validator {
     private PostRepository postRepository;
     @Autowired
     private PostCategotyRepository categotyRepository;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private CommentRepository commentRepository;
 
 
     String lettersEng = "[A-Z][a-z]+";
@@ -39,12 +46,19 @@ public class Validator {
                 throw new BadRequestExeption("Username must be between 8 and 20 characters.Only latin letters and numbers allowed");
         }
     }
+    public void checkUsernameUnique(String username){
+        User u = userRepository.findByUsername(username);
+        if(u!=null){
+            throw new BadRequestExeption("Username is already taken.");
+        }
+    }
     public void validPassword(String password){
         if(password == null || password.isBlank()){
             throw new BadRequestExeption("Password is mandatory");
         }
         if(!password.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
             throw new BadRequestExeption("Password must contains at least 8 numbers and 2 charsequences");
+            //TODO wrong message
         }
 
     }
@@ -65,15 +79,16 @@ public class Validator {
     }
 
     public void validateFirstnameAndLastName(String firstname,String lastname) {
-        if (!firstname.matches(lettersEng) || !lastname.matches(lettersEng)) {
-            throw new BadRequestExeption("Names must be written in latinic and must start with capital letter.");
-        }
+
         if (firstname.length() < 3 || firstname.length() > 20) {
             throw new BadRequestExeption("First name must be between 3 and 20 characters.");
         }
             if (lastname.length() < 3 || lastname.length() > 20) {
                 throw new BadRequestExeption("Last name must be between 3 and 20 characters.");
             }
+        if (!firstname.matches(lettersEng) || !lastname.matches(lettersEng)) {
+            throw new BadRequestExeption("Names must be written in latinic and must start with capital letter.");
+        }
         }
 
     public void validateDateOfBirth(LocalDate dateOfBirth){
@@ -101,13 +116,34 @@ public class Validator {
         }
     }
     public PostCategory validateCategory(long cateId){
-        return categotyRepository.findById(cateId).orElseThrow(()-> new NotFoundExeption("Post category not found"));
+        return categotyRepository.findById(cateId).orElseThrow(()-> new NotFoundExeption("Post Category not found " + cateId));
     }
 
-    public User validateUser(long userId){
-        return userRepository.findById(userId).orElseThrow(()-> new NotFoundExeption("User not found"));
+    public User validateUserAndGet(long userId){
+        return userRepository.findById(userId).orElseThrow(()-> new NotFoundExeption("User not found with id " + userId));
     }
-    public Post validatePost(long postId){
-        return postRepository.findById(postId).orElseThrow(()-> new NotFoundExeption("Post not found"));
+    public Post validatePostAndGet(long postId){
+        return postRepository.findById(postId).orElseThrow(()-> new NotFoundExeption("Post not found with id " + postId));
+    }
+    public Comment validateCommentAndGet(long comId){
+        return commentRepository.findById(comId).orElseThrow(()-> new NotFoundExeption("Comment not found with id " + comId));
+    }
+    public void validateUserByEmail(String email){
+        if(userRepository.findByEmail(email)==null){
+            throw new BadRequestExeption("We dont have user with this email");
+        }
+    }
+
+    public User validateUsernameAndPassword(String username, String password) {
+        User u = userRepository.findByUsername(username);
+        if(u == null || !passwordEncoder.matches(password,u.getPassword())){
+            throw new UnauthorizedExeption("Wrong credentials");
+        }
+        return u;
+    }
+    public void validateUserAndPostOwnership(Post post,long userId){
+        if(post.getUser().getId()!=userId){
+            throw new BadRequestExeption("You are not owner of this post");
+        }
     }
 }

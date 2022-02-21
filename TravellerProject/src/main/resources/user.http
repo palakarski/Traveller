@@ -38,11 +38,11 @@ Content-Type: application/json
   "lastName":"Rangelov",
   "username":"palakarski1",
   "birthDate":"1993-02-22",
-  "email":"palakarski1",
-  "password":"palakarski1@",
-  "confpassword":"palakarski1@",
+  "email":"palakarski1@abv",
+  "password":"palakarski@",
+  "confpassword":"palakarski@",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":false
+  "admin":false
 }
 ### //Valid Registration
 POST http://localhost:8080/register
@@ -53,11 +53,11 @@ Content-Type: application/json
   "lastName":"Rangelov",
   "username":"palakarski2",
   "birthDate":"1993-02-22",
-  "email":"palakarski2",
-  "password":"palakarski2@",
-  "confpassword":"palakarski2@",
+  "email":"palakarski2@mail.bg",
+  "password":":@L#:!LKP",
+  "confpassword":":@L#:!LKP",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
+  "admin":true
 }
 ### //Valid Registration
 POST http://localhost:8080/register
@@ -72,7 +72,7 @@ Content-Type: application/json
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
+  "admin":true
 }
 ### //Valid Registration
 POST http://localhost:8080/register
@@ -87,7 +87,7 @@ Content-Type: application/json
   "password":"palakarski4@",
   "confpassword":"palakarski4@",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
+  "admin":true
 }
 ### //Valid Registration
 POST http://localhost:8080/register
@@ -104,7 +104,7 @@ Content-Type: application/json
   "createdAt":"1993-02-22T00:00:00",
   "admin":false
 }
-### //Unvalid Registration
+### //Unvalid Registration ВАЖНООООО Internal Server Eror няма име
 POST http://localhost:8080/register
 Content-Type: application/json
 
@@ -117,22 +117,7 @@ Content-Type: application/json
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
-}
-### //Unvalid Registration
-POST http://localhost:8080/register
-Content-Type: application/json
-
-{
-  "firstName":"Alex",
-  "lastName":"",
-  "username":"palakarski42",
-  "birthDate":"1993-02-22",
-  "email":"palakarski@gmail.com",
-  "password":"palakarski4@",
-  "confpassword":"palakarski4@",
-  "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
+  "admin":true
 }
 ### //Unvalid Registration
 POST http://localhost:8080/register
@@ -141,13 +126,28 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"",
+  "username":"palakarski42",
   "birthDate":"1993-02-22",
-  "email":"palakarski5",
+  "email":"palakarski@gmail.com",
+  "password":"palakarski4@",
+  "confpassword":"palakarski4@",
+  "createdAt":"1993-02-22T00:00:00",
+  "admin":true
+}
+### //Unvalid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"Rangelov",
+  "username":"palakarski5",
+  "birthDate":"1993-02-22",
+  "email":"palakarski@mail.com",
   "password":"palakarski5@",
   "confpassword":"palakarski5@",
   "createdAt":"1993-02-22T00:00:00",
-  "isAdmin":true
+  "admin":true
 }
 ###
 POST http://localhost:8080/login
@@ -156,7 +156,7 @@ Content-Type: application/json
 {
 
 "username":"palakarski2",
-"password":"palakarski2@"
+"password":"palakarski1@"
 
 }
 ###
@@ -165,8 +165,8 @@ Content-Type: application/json
 
 {
 
-  "username":"palakarski1",
-  "password":"palakarski1@"
+  "username":"palakarski2",
+  "password":":@L#:!LKP"
 
 }
 
@@ -191,7 +191,7 @@ PUT http://localhost:8080/changepass
 Content-Type: application/json
 
 {
-  "oldpassword" : "palakarski1@",
+  "oldpassword" : ":@L#:!LKP",
   "newpassword" : "palakarski1@",
   "confnewpassword" : "palakarski1@"
 
@@ -212,7 +212,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/delete
 
 ###
-POST http://localhost:8080/user/2/follow
+POST http://localhost:8080/user/5/follow
 ###
 POST http://localhost:8080/user/3/unfollow
 

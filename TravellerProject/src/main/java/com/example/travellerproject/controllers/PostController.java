@@ -102,7 +102,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/posts/newsfeed")
-    public TreeSet<ResponsePostDTO> getNewsfeed(HttpSession session){
+    public List<ResponsePostDTO> getNewsfeed(HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.getNewsfeed(userId);
     }

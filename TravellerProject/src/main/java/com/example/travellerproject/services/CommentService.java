@@ -30,11 +30,13 @@ public class CommentService {
     private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private Validator validator;
 
 
-    public CommentResponseDTO create(long userId, CommentRequestDTO commentRequestDTO, long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundExeption("Post doesnt exist"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User doesnt exist"));
+    public CommentResponseDTO create(long userId, CommentRequestDTO commentRequestDTO, long postId) {
+        Post post = validator.validatePostAndGet(postId);
+        User user = validator.validateUserAndGet(userId);
         if(commentRequestDTO.getText()==null||commentRequestDTO.getText().isBlank()){
             throw new BadRequestExeption("Cannot post empty comment");
         }
@@ -49,26 +51,28 @@ public class CommentService {
     }
 
 
-    public MessageDTO deleteComment(long id,long userId) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new NotFoundExeption("Comment not found."));
-        if(comment.getUser().getId()!=userId){
+    public MessageDTO deleteComment(long commentId,long userId) {
+        Comment comment = validator.validateCommentAndGet(commentId);
+        User user = validator.validateUserAndGet(userId);
+        if(comment.getUser().equals(user)){
             throw new UnauthorizedExeption("This comment isn't your,and you can't delete it.");
         }
         commentRepository.delete(comment);
         return new MessageDTO("Comment was deleted");
     }
 
-    public CommentResponseDTO getById(long id) {
-        Comment comment=commentRepository.findById(id).orElseThrow(() -> new NotFoundExeption("Comment not found."));
+    public CommentResponseDTO getById(long commentId) {
+        Comment comment = validator.validateCommentAndGet(commentId);
         CommentResponseDTO commentResponseDTO = modelMapper.map(comment,CommentResponseDTO.class);
         commentResponseDTO.setOwnerOfPostDTO(modelMapper.map(comment.getUser(),OwnerOfPostDTO.class));
         commentResponseDTO.setResponsePostDTO(modelMapper.map(comment.getPost(),ResponsePostDTO.class));
         return commentResponseDTO;
     }
 
-    public CommentResponseDTO editComment(CommentRequestDTO commentRequestDTO,long id,long userId) {
-        Comment comment=commentRepository.findById(id).orElseThrow(() -> new NotFoundExeption("Comment not found."));
-        if(comment.getUser().getId()!=userId){
+    public CommentResponseDTO editComment(CommentRequestDTO commentRequestDTO,long commentId,long userId) {
+        Comment comment = validator.validateCommentAndGet(commentId);
+        User user = validator.validateUserAndGet(userId);
+        if(comment.getUser().equals(user)){
             throw new UnauthorizedExeption("You cant edit comment that u didnt post.");
         }
         modelMapper.map(commentRequestDTO,comment);
@@ -81,8 +85,8 @@ public class CommentService {
 
     //ByIvan
     public LikeDislikeMessageDTO likeComment(long commentId, long userId){
-       Comment comment = getCommentById(commentId);
-        User user = getUserById(userId);
+        Comment comment = validator.validateCommentAndGet(commentId);
+        User user = validator.validateUserAndGet(userId);
         if (user.getLikedComments().contains(comment)){
             throw new BadRequestExeption("You have already liked this comment");
         }
@@ -92,8 +96,8 @@ public class CommentService {
     }
 
     public LikeDislikeMessageDTO undoLikeComment(long commentId, long userId){
-        Comment comment = getCommentById(commentId);
-        User user = getUserById(userId);
+        Comment comment = validator.validateCommentAndGet(commentId);
+        User user = validator.validateUserAndGet(userId);
         if (!user.getLikedComments().contains(comment)){
             throw new BadRequestExeption("You have to like the comment before removing like");
         }
@@ -104,8 +108,8 @@ public class CommentService {
 
 
     public LikeDislikeMessageDTO dislikeComment(long commentId, long userId){
-        Comment comment = getCommentById(commentId);
-        User user = getUserById(userId);
+        Comment comment = validator.validateCommentAndGet(commentId);
+        User user = validator.validateUserAndGet(userId);
         if (user.getDislikedComments().contains(comment)){
             throw new BadRequestExeption("You have already disliked this comment");
         }
@@ -116,8 +120,8 @@ public class CommentService {
 
 
     public LikeDislikeMessageDTO undoDislikeComment(long commentId, long userId){
-        Comment comment = getCommentById(commentId);
-        User user = getUserById(userId);
+        Comment comment = validator.validateCommentAndGet(commentId);
+        User user = validator.validateUserAndGet(userId);
         if (!user.getDislikedComments().contains(comment)){
             throw new BadRequestExeption("You have to dislike the comment before removing dislike");
         }
@@ -127,11 +131,11 @@ public class CommentService {
     }
 
 
-    private User getUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
-    }
-
-    private Comment getCommentById(long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(()->new NotFoundExeption("Comment not found"));
-    }
+//    private User getUserById(long userId) {
+//        return userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
+//    }
+//
+//    private Comment getCommentById(long commentId) {
+//        return commentRepository.findById(commentId).orElseThrow(()->new NotFoundExeption("Comment not found"));
+//    }
 }
