@@ -27,6 +27,7 @@ public class VideoController {
     public ResponseEntity<VideoDTO> uploadVideo(@RequestParam(name = "file") MultipartFile file, @PathVariable long id, HttpSession session){
         return videoService.uploadImg(file,session,id);
     }
+
     @SneakyThrows
     @GetMapping(value = "/video/{filename}")
     public void downloadById(@PathVariable String filename, HttpServletResponse response){
