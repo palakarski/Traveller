@@ -117,7 +117,26 @@ Content-Type: application/json
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
+<<<<<<< HEAD
+  "isAdmin":true
+}
+### //Unvalid Registration
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "firstName":"Alex",
+  "lastName":"",
+  "username":"palakarsk2222222",
+  "birthDate":"1993-02-22",
+  "email":"palakarsk2222i99999@gmail.com",
+  "password":"palakarski4@",
+  "confpassword":"palakarski4@",
+  "createdAt":"1993-02-22T00:00:00",
+  "isAdmin":true
+=======
   "admin":true
+>>>>>>> 3183113411a48c9d5053f30332b99eb1fe6c0d76
 }
 ### //Unvalid Registration
 POST http://localhost:8080/register
@@ -212,7 +231,11 @@ Content-Type: application/json
 DELETE http://localhost:8080/delete
 
 ###
+<<<<<<< HEAD
+POST http://localhost:8080/user/1/follow
+=======
 POST http://localhost:8080/user/5/follow
+>>>>>>> 3183113411a48c9d5053f30332b99eb1fe6c0d76
 ###
 POST http://localhost:8080/user/3/unfollow
 

@@ -12,13 +12,21 @@ import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Log4j2
 @Service
 public class UserService {
@@ -97,6 +105,7 @@ public class UserService {
             User u = modelMapper.map(dto,User.class);
             u.setPassword(passwordEncoder.encode(password));
             userRepository.save(u);
+            sendEmail("palakarski@gmail.com");
             return u;
         }
 
@@ -189,5 +198,45 @@ public class UserService {
         subcriber.getFollowedUsers().remove(subscribedFor);
         userRepository.save(subcriber);
         return new MessageDTO("You have unsubscribe for " + subscribedFor);
+    }
+    private void sendEmail(String recepient){
+        Properties properties = new Properties();
+
+        properties.put("mail.smtp.auth","true");
+        properties.put("mail.smtp.starttls.enable","true");
+        properties.put("mail.smtp.host","smtp.gmail.com");
+        properties.put("mail.smtp.auth","true");
+
+        String myAccount = "stefeanpvivan1998@gmail.com";
+        String password = "xxxxxxx";
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(myAccount,password);
+            }
+        });
+
+        Message message = prepareMessage(session,myAccount,recepient);
+        try {
+            Transport.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            System.out.println("greshka pri prashtane na email");
+        }
+    }
+    private static Message prepareMessage(Session session,String myAccount,String recepient){
+            Message message = new MimeMessage(session);
+        try {
+            message.setFrom(new InternetAddress(myAccount));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
+            message.setSubject("Traveller registration");
+            //tuk se promenq tova koeto shte sadarja emaila
+            message.setText("Welcome to Traveller registration successful. evala na tiq momcheta aide i lokaciq sa slojili ;D");
+            return message;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

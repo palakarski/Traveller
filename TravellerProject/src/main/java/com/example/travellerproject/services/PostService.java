@@ -227,20 +227,67 @@ public class PostService {
             throw new BadRequestExeption("No such filters");
         }
         List <ResponsePostDTO> sortedNewsfeed = getUnsortedNewsfeed(userId);
-        switch (filterName){
-            case "date" :{
-                sortedNewsfeed.sort((post1 , post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
-            }break;
-            case "category" :{
-                sortedNewsfeed.sort((post1 , post2) -> post2.getPostCategory().getCategoryType().compareTo(post1.getPostCategory().getCategoryType()));
-            }break;
-            case "like" : {
-                //TODO
-            }break;
-        }
-        return sortedNewsfeed;
+        return filterPostsCollection(sortedNewsfeed , filterName);
     }
 
+    public List<ResponsePostDTO> getAllForeignPosts(long userId, String filterName){
+        if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
+            throw new BadRequestExeption("No such filters");
+        }
+        List <ResponsePostDTO> sortedForeignPosts = getAllForeignPostsUnsorted(userId);
+        return filterPostsCollection(sortedForeignPosts,filterName);
+    }
+
+
+
+    private List<ResponsePostDTO> getUnsortedNewsfeed(long userId){
+        User user = userRepository.getById(userId);
+        if(user.getFollowedUsers().isEmpty()){
+            throw  new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+        }
+        List <ResponsePostDTO> unsortedNewsfeed = new ArrayList<>();
+        for (User currUser : user.getFollowedUsers()) {
+            for (Post post : currUser.getPosts()) {
+                int postLikes = post.getLikers().size();
+                ResponsePostDTO currDto = modelMapper.map(post,ResponsePostDTO.class);
+                currDto.setLikes(postLikes);
+                unsortedNewsfeed.add(currDto);
+            }
+        }
+        return  unsortedNewsfeed;
+    }
+    private List<ResponsePostDTO> getAllForeignPostsUnsorted(long userId){
+        User u  = userRepository.getById(userId);
+        String userName = u.getUsername();
+        //findAllByUsernameIsNot - raboti sas string
+       List<Post> allForeignPosts = postRepository.findPostByUserIsNot(u);
+       List<ResponsePostDTO> dtos = new ArrayList<>();
+       for(Post post : allForeignPosts){
+           int postLikes = post.getLikers().size();
+           ResponsePostDTO currDto = modelMapper.map(post,ResponsePostDTO.class);
+           currDto.setLikes(postLikes);
+           dtos.add(currDto);
+       }
+       return dtos;
+    }
+
+    private List<ResponsePostDTO> filterPostsCollection(List<ResponsePostDTO> collection,String filterName){
+        switch (filterName){
+            case "date" :{
+                collection.sort((post1 , post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+            }break;
+            case "category" :{
+                collection.sort((post1 , post2) -> post2.getPostCategory().getCategoryType().compareTo(post1.getPostCategory().getCategoryType()));
+            }break;
+            case "like" : {
+                collection.sort((post1 , post2) -> post2.getLikes()-post1.getLikes());
+            }break;
+        }
+        return collection;
+    }
+
+
+    /*
     private List<ResponsePostDTO> getUnsortedNewsfeed(long userId){
         User user = userRepository.getById(userId);
         if(user.getFollowedUsers().isEmpty()){
@@ -254,4 +301,6 @@ public class PostService {
         }
         return  unsortedNewsfeed;
     }
+
+     */
 }
