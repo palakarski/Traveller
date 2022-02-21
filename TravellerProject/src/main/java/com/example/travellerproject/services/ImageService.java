@@ -1,6 +1,7 @@
 package com.example.travellerproject.services;
 
 import com.example.travellerproject.controllers.SessionValidator;
+import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.exeptions.NotFoundExeption;
 import com.example.travellerproject.exeptions.UnauthorizedExeption;
 import com.example.travellerproject.model.dto.media.ImageDTO;
@@ -27,31 +28,34 @@ public class ImageService {
     @Autowired
     private SessionValidator sessionValidator;
     @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private ImageRepositoty imageRepositoty;
+    @Autowired
+    private Validator validator;
 
 
     @SneakyThrows
     public ResponseEntity<ImageDTO> uploadImg(MultipartFile file, HttpSession session, long postId) {
         long userId = sessionValidator.isUserLogedIn(session);
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundExeption("Post not found"));
+        User user = validator.validateUserAndGet(userId);
+        Post post = validator.validatePostAndGet(postId);
         if(user.getId()!=post.getUser().getId()){
-            throw new UnauthorizedExeption("This post isnt yours.So you cannnot add images");
+            throw new UnauthorizedExeption("This post isn't yours.So you cannot add images");
         }
-        String extention = FilenameUtils.getExtension(file.getOriginalFilename());
-        String name = System.nanoTime()+"."+extention;
+        String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String name = System.nanoTime()+"."+ extension;
         Files.copy(file.getInputStream(), new File("images" + File.separator + name).toPath());
         Image image = new Image();
         image.setFilename(name);
         image.setPost(post);
+        if(post.getImages().size()<3){
+            post.getImages().add(image);
+        }else{
+            throw new BadRequestExeption("Sorry post cannot have more then 3 photos");
+        }
         imageRepositoty.save(image);
-        post.getImages().add(image);
+
         return ResponseEntity.ok(modelMapper.map(image,ImageDTO.class));
     }
 }

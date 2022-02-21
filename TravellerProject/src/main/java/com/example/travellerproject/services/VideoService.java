@@ -1,6 +1,7 @@
 package com.example.travellerproject.services;
 
 import com.example.travellerproject.controllers.SessionValidator;
+import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.exeptions.NotFoundExeption;
 import com.example.travellerproject.exeptions.UnauthorizedExeption;
 import com.example.travellerproject.model.dto.media.ImageDTO;
@@ -30,31 +31,34 @@ public class VideoService {
     @Autowired
     private SessionValidator sessionValidator;
     @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private VideoRepository videoRepository;
-
+    @Autowired
+    private Validator validator;
 
     @SneakyThrows
     public ResponseEntity<VideoDTO> uploadImg(MultipartFile file, HttpSession session, long postId) {
         long userId = sessionValidator.isUserLogedIn(session);
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundExeption("Post not found"));
+        User user = validator.validateUserAndGet(userId);
+        Post post = validator.validatePostAndGet(postId);
         if(user.getId()!=post.getUser().getId()){
-            throw new UnauthorizedExeption("This post isn't yours.So you cannnot add video");
+            throw new UnauthorizedExeption("This post isn't yours.So you cannot add video");
         }
-        String extention = FilenameUtils.getExtension(file.getOriginalFilename());
-        String name = System.nanoTime()+"."+extention;
+        String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String name = System.nanoTime()+"."+ extension;
         Files.copy(file.getInputStream(), new File("video" + File.separator + name).toPath());
         Video video = new Video();
         video.setFilename(name);
         video.setPost(post);
+        if(post.getVideos().size()<1){
+            post.getVideos().add(video);
+        }
+        else{
+            throw new BadRequestExeption("Sorry post cannot have more than 1 video.");
+        }
         videoRepository.save(video);
-        post.getVideos().add(video);
+
         return ResponseEntity.ok(modelMapper.map(video, VideoDTO.class));
     }
 }
