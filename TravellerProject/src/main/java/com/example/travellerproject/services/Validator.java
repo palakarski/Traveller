@@ -14,6 +14,7 @@ import com.example.travellerproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MimeType;
 
 import java.time.LocalDate;
 
@@ -144,6 +145,18 @@ public class Validator {
     public void validateUserAndPostOwnership(Post post,long userId){
         if(post.getUser().getId()!=userId){
             throw new BadRequestExeption("You are not owner of this post");
+        }
+    }
+
+    public void validateImageExtention(String extension) {
+        if(!extension.matches("([^\\\\s]+(\\\\.(?i)(jpe?g|png|gif|bmp))$)")){
+            throw new BadRequestExeption("This file is not image");
+        }
+    }
+    public void validateVideoExtention(String extension) {
+        if(!extension.matches("^.*\\.(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)$”")){
+            throw new BadRequestExeption("This file is not video");
+
         }
     }
 }

@@ -44,6 +44,7 @@ public class ImageService {
             throw new UnauthorizedExeption("This post isn't yours.So you cannot add images");
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        validator.validateImageExtention(extension);
         String name = System.nanoTime()+"."+ extension;
         Files.copy(file.getInputStream(), new File("images" + File.separator + name).toPath());
         Image image = new Image();

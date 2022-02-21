@@ -3,6 +3,7 @@ package com.example.travellerproject.controllers;
 import com.byteowls.jopencage.JOpenCageGeocoder;
 import com.byteowls.jopencage.model.JOpenCageResponse;
 import com.byteowls.jopencage.model.JOpenCageReverseRequest;
+import com.example.travellerproject.model.dto.LocationType;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.services.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class LocationController {
     private SessionValidator sessionValidator;
 
     @GetMapping(value = "/post/{postId}/location")
-    public JOpenCageResponse showLocation(@PathVariable long postId, HttpServletResponse response, HttpSession session){
+    public LocationType showLocation(@PathVariable long postId, HttpServletResponse response, HttpSession session){
         sessionValidator.isUserLoged(session);
         Post post =  validator.validatePostAndGet(postId);
         double latitude= Double.parseDouble(post.getLatitude());
@@ -32,7 +33,11 @@ public class LocationController {
         request.setNoAnnotations(true);
 
         JOpenCageResponse responseJ = jOpenCageGeocoder.reverse(request);
-//        responseJ.getFirstComponents().
-        return  responseJ;
+        LocationType locationType = new LocationType();
+        locationType.setContinent(responseJ.getFirstComponents().getContinent());
+        locationType.setCountry(responseJ.getFirstComponents().getCountry());
+        locationType.setState(responseJ.getFirstComponents().getState());
+        //TODO
+        return  locationType;
     }
 }
