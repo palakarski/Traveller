@@ -101,10 +101,19 @@ public class PostController {
         return postService.undoDislikePost(id,userId);
     }
 
+
     @GetMapping(value = "/posts/newsfeed")
-    public List<ResponsePostDTO> getNewsfeed(HttpSession session){
+    public List<ResponsePostDTO> getNewsfeed(HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.getNewsfeed(userId);
+    }
+
+
+    @GetMapping(value = "/posts/newsfeed/{filterName}")
+    public List<ResponsePostDTO> getNewsfeedWithFilter(@PathVariable String filterName, HttpSession session){
+
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getNewsfeedWithFilter(userId,filterName);
     }
 
 }

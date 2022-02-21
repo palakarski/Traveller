@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeSet;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -204,24 +201,57 @@ public class PostService {
         return postsDTO;
     }
 
-    public List<ResponsePostDTO> getNewsfeed(long userId){
+
+    public List<ResponsePostDTO> getNewsfeed(long userId) {
         User user = validator.validateUserAndGet(userId);
 //        User user = userRepository.getById(userId);
-        if(user.getFollowedUsers().isEmpty()){
-            throw  new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+        if (user.getFollowedUsers().isEmpty()) {
+            throw new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
         }
         //nz dali taka e pravilno da se sortirat
         List<ResponsePostDTO> newsfeed = new ArrayList<>();
-        for (User currUser : user.getFollowedUsers()){
-           for(Post post : currUser.getPosts()){
-               newsfeed.add(modelMapper.map(post,ResponsePostDTO.class));
-           }
+        for (User currUser : user.getFollowedUsers()) {
+            for (Post post : currUser.getPosts()) {
+                newsfeed.add(modelMapper.map(post, ResponsePostDTO.class));
+            }
         }
-        if(newsfeed.isEmpty()){
+        if (newsfeed.isEmpty()) {
             throw new NotFoundExeption("There are no post in your newsfeed.");
         }
-        newsfeed.sort((post1,post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
-        return  newsfeed;
+        newsfeed.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+        return newsfeed;
     }
 
+    public List<ResponsePostDTO> getNewsfeedWithFilter(long userId, String filterName){
+        if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
+            throw new BadRequestExeption("No such filters");
+        }
+        List <ResponsePostDTO> sortedNewsfeed = getUnsortedNewsfeed(userId);
+        switch (filterName){
+            case "date" :{
+                sortedNewsfeed.sort((post1 , post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+            }break;
+            case "category" :{
+                sortedNewsfeed.sort((post1 , post2) -> post2.getPostCategory().getCategoryType().compareTo(post1.getPostCategory().getCategoryType()));
+            }break;
+            case "like" : {
+                //TODO
+            }break;
+        }
+        return sortedNewsfeed;
+    }
+
+    private List<ResponsePostDTO> getUnsortedNewsfeed(long userId){
+        User user = userRepository.getById(userId);
+        if(user.getFollowedUsers().isEmpty()){
+            throw  new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+        }
+        List <ResponsePostDTO> unsortedNewsfeed = new ArrayList<>();
+        for (User currUser : user.getFollowedUsers()) {
+            for (Post post : currUser.getPosts()) {
+                unsortedNewsfeed.add(modelMapper.map(post, ResponsePostDTO.class));
+            }
+        }
+        return  unsortedNewsfeed;
+    }
 }
