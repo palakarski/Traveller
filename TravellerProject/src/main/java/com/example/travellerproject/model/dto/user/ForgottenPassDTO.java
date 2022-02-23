@@ -11,8 +11,8 @@ import lombok.Setter;
 public class ForgottenPassDTO {
     @NotNull
     private String email;
-    @NotNull
-    private String newpassword;
-    @NotNull
-    private String confnewpassword;
+//    @NotNull
+//    private String newpassword;
+//    @NotNull
+//    private String confnewpassword;
 }

@@ -41,9 +41,9 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarski2",
+  "username":"pazxqqadcxxcsrski2",
   "birthDate":"1993-02-22",
-  "email":"palakarski2@mail.bg",
+  "email":"pqqqadcxxcqq2@mail.bg",
   "password":":@L#:!LKP",
   "confpassword":":@L#:!LKP",
   "createdAt":"1993-02-22T00:00:00",
@@ -56,9 +56,9 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarski3",
+  "username":"palakammrski3",
   "birthDate":"1993-02-22",
-  "email":"palakarski3",
+  "email":"palakarsmm@mki3",
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
@@ -71,9 +71,8 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarski4",
-  "birthDate":"1993-02-22",
-  "email":"palakarski4",
+  "username":"oldwayemail",
+  "email":"oldwayemail99@9",
   "password":"palakarski4@",
   "confpassword":"palakarski4@",
   "createdAt":"1993-02-22T00:00:00",
@@ -86,9 +85,9 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarskai5a3s2s21",
+  "username":"prashtachnaemail",
   "birthDate":"1993-02-22",
-  "email":"palakarskia5@сsadddda",
+  "email":"prashtach@email",
   "password":"palakarski5@",
   "confpassword":"palakarski5@",
   "createdAt":"1993-02-22T00:00:00",
@@ -101,9 +100,9 @@ Content-Type: application/json
 {
 
   "lastName":"Rangelov",
-  "username":"palakarski312",
+  "username":"palakarskcvi312",
   "birthDate":"1993-02-22",
-  "email":"palakarsk1i32@mail.bg",
+  "email":"palakarsk1ivc32@mail.bg",
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
@@ -147,11 +146,11 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"palakarski5",
+  "username":"OLDfodsssdest",
   "birthDate":"1993-02-22",
-  "email":"palakarski@mail.com",
-  "password":"palakarski5@",
-  "confpassword":"palakarski5@",
+  "email":"old@test",
+  "password":"123456789@A",
+  "confpassword":"123456789@A",
   "createdAt":"1993-02-22T00:00:00",
   "admin":true
 }
@@ -171,8 +170,8 @@ Content-Type: application/json
 
 {
 
-  "username":"palakarski2",
-  "password":":@L#:!LKP"
+  "username":"forgotenTest",
+  "password":"12345678@A"
 
 }
 
@@ -208,9 +207,7 @@ PUT http://localhost:8080/forgotten_password
 Content-Type: application/json
 
 {
-  "email" : "palakarski1234256",
-  "newpassword" : "12345678Ar!@12",
-  "confnewpassword" : "12345678Ar!@12"
+  "email" : "palakarski1"
 
 }
 

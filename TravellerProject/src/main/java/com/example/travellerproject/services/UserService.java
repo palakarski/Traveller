@@ -10,6 +10,7 @@ import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,6 +34,8 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private EmailService emailService;
 
         public User login(String username, String password){
 //            if(username== null || username.isBlank()){
@@ -100,7 +103,10 @@ public class UserService {
             User u = modelMapper.map(dto,User.class);
             u.setPassword(passwordEncoder.encode(password));
             userRepository.save(u);
-            sendEmail("palakarski@gmail.com");
+            //star nachin
+            emailService.sendEmail("stefeanpvivan1998@gmail.com","REGISTRATION", "Welcome to traveller");
+            //nov nachin
+            //emailService.sendEmail("stefeanpvivan1998@gmail.com","Traveller Registration", "WELCOME");
             return u;
         }
 
@@ -157,7 +163,7 @@ public class UserService {
         return new MessageDTO("Password was changed");
     }
 
-    public MessageDTO forgottenPassword(HttpSession session, String email, String password, String repeatedNewPass) {
+    public MessageDTO forgottenPassword(HttpSession session, String email) {
 //            if(userRepository.findByEmail(email)==null){
 //                throw new BadRequestExeption("We dont have user with this email");
 //            }
@@ -165,12 +171,18 @@ public class UserService {
 //                throw new BadRequestExeption("Password and confirm password doesnt match");
 //            }
             validator.validateUserByEmail(email);
-            validator.matchPassAndConfPass(password,repeatedNewPass);
+           // validator.matchPassAndConfPass(password,repeatedNewPass);
+            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+            String pwd = RandomStringUtils.random( 8, characters );
             User u = userRepository.findByEmail(email);
-            u.setPassword(passwordEncoder.encode(password));
+            u.setPassword(passwordEncoder.encode(pwd));
             userRepository.save(u);
-            return new MessageDTO("Password was changed you can login now");
-
+            String userEmail = u.getEmail();
+            //novo - ne raboti
+            //emailService.sendEmail("stefeampvivan1998@gmail.com","Password change","Your password is changed to :"+pwd);
+            //staro - raboti
+            emailService.sendEmail("stefeanpvivan1998@gmail.com","passwordChange", "your new pass is : "+ pwd);
+        return new MessageDTO("Password was changed you can login now");
     }
 
         public MessageDTO follow(long userId, long id) {
@@ -193,45 +205,5 @@ public class UserService {
         subcriber.getFollowedUsers().remove(subscribedFor);
         userRepository.save(subcriber);
         return new MessageDTO("You have unsubscribe for " + subscribedFor);
-    }
-    private void sendEmail(String recepient){
-        Properties properties = new Properties();
-
-        properties.put("mail.smtp.auth","true");
-        properties.put("mail.smtp.starttls.enable","true");
-        properties.put("mail.smtp.host","smtp.gmail.com");
-        properties.put("mail.smtp.auth","true");
-
-        String myAccount = "stefeanpvivan1998@gmail.com";
-        String password = "xxxxxxx";
-
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(myAccount,password);
-            }
-        });
-
-        Message message = prepareMessage(session,myAccount,recepient);
-        try {
-            Transport.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            System.out.println("greshka pri prashtane na email");
-        }
-    }
-    private static Message prepareMessage(Session session,String myAccount,String recepient){
-            Message message = new MimeMessage(session);
-        try {
-            message.setFrom(new InternetAddress(myAccount));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
-            message.setSubject("Traveller registration");
-            //tuk se promenq tova koeto shte sadarja emaila
-            message.setText("Welcome to Traveller registration successful. evala na tiq momcheta aide i lokaciq sa slojili ;D");
-            return message;
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

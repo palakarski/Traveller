@@ -85,6 +85,7 @@ public class CommentService {
             throw new BadRequestException("You have already liked this comment");
         }
         comment.getCommentLikers().add(user);
+
         commentRepository.save(comment);
         return new LikeDislikeMessageDTO("You have liked a comment",comment.getCommentLikers().size());
     }

@@ -16,5 +16,7 @@ public class CommentResponseDTO {
         private LocalDate createdAt;
         private OwnerOfPostDTO ownerOfPostDTO;
         private ResponsePostDTO responsePostDTO;
+        private int likers;
+        private int dislikers;
 
 }

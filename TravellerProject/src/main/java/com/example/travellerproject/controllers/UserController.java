@@ -71,13 +71,12 @@ public class UserController {
         @PutMapping(value = "/forgotten_password")
         public MessageDTO forgottenPass(HttpSession session, @RequestBody ForgottenPassDTO forgottenPassDTO){
             String email = forgottenPassDTO.getEmail();
-            String password = forgottenPassDTO.getNewpassword();
-            String confpassword = forgottenPassDTO.getConfnewpassword();
+
             if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
                 throw new BadRequestException("You are already logged in.");
             }
 
-            return userService.forgottenPassword(session,email,password,confpassword);
+            return userService.forgottenPassword(session,email);
         }
 
         @PostMapping(value = "/user/{id}/follow")
