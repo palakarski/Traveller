@@ -1,16 +1,13 @@
 package com.example.travellerproject.services;
 
 import com.example.travellerproject.controllers.SessionValidator;
-import com.example.travellerproject.exeptions.BadRequestExeption;
-import com.example.travellerproject.exeptions.NotFoundExeption;
-import com.example.travellerproject.exeptions.UnauthorizedExeption;
+import com.example.travellerproject.exceptions.BadRequestException;
+import com.example.travellerproject.exceptions.UnauthorizedException;
 import com.example.travellerproject.model.dto.media.ImageDTO;
 import com.example.travellerproject.model.pojo.Image;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.ImageRepositoty;
-import com.example.travellerproject.repositories.PostRepository;
-import com.example.travellerproject.repositories.UserRepository;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -41,7 +38,7 @@ public class ImageService {
         User user = validator.validateUserAndGet(userId);
         Post post = validator.validatePostAndGet(postId);
         if(user.getId()!=post.getUser().getId()){
-            throw new UnauthorizedExeption("This post isn't yours.So you cannot add images");
+            throw new UnauthorizedException("This post isn't yours.So you cannot add images");
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
         validator.validateImageExtention(extension);
@@ -53,7 +50,7 @@ public class ImageService {
         if(post.getImages().size()<3){
             post.getImages().add(image);
         }else{
-            throw new BadRequestExeption("Sorry post cannot have more then 3 photos");
+            throw new BadRequestException("Sorry post cannot have more then 3 photos");
         }
         imageRepositoty.save(image);
 

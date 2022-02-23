@@ -33,17 +33,7 @@ GET http://localhost:8080/users/find/palakarski8
 POST http://localhost:8080/register
 Content-Type: application/json
 
-{
-  "firstName":"Alex",
-  "lastName":"Rangelov",
-  "username":"palakarski1",
-  "birthDate":"1993-02-22",
-  "email":"palakarski1@abv",
-  "password":"palakarski@",
-  "confpassword":"palakarski@",
-  "createdAt":"1993-02-22T00:00:00",
-  "admin":false
-}
+http://localhost:8080/register
 ### //Valid Registration
 POST http://localhost:8080/register
 Content-Type: application/json

@@ -1,6 +1,4 @@
 package com.example.travellerproject.controllers;
-
-import com.example.travellerproject.exeptions.BadRequestExeption;
 import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.comment.CommentRequestDTO;
@@ -10,7 +8,6 @@ import com.example.travellerproject.services.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpSession;
 
 @RestController

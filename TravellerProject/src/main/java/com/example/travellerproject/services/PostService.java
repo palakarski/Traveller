@@ -1,7 +1,7 @@
 package com.example.travellerproject.services;
-import com.example.travellerproject.exeptions.BadRequestExeption;
-import com.example.travellerproject.exeptions.NotFoundExeption;
-import com.example.travellerproject.exeptions.UnauthorizedExeption;
+import com.example.travellerproject.exceptions.BadRequestException;
+import com.example.travellerproject.exceptions.NotFoundException;
+import com.example.travellerproject.exceptions.UnauthorizedException;
 import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
@@ -9,14 +9,12 @@ import com.example.travellerproject.model.dto.post.ResponsePostDTO;
 import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.User;
-import com.example.travellerproject.repositories.PostCategotyRepository;
 import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -31,8 +29,6 @@ public class PostService {
     private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private PostCategotyRepository postCategotyRepository;
 
     public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userId) {
         long postCategoryId = requestPostDTO.getPostCategory();
@@ -102,7 +98,7 @@ public class PostService {
 //        Post post = getPostById(postId);
 //        User user = getUserById(userId);
         if (user.getLikedPosts().contains(post)){
-            throw new BadRequestExeption("You have already liked this post");
+            throw new BadRequestException("You have already liked this post");
         }
         post.getLikers().add(user);
         postRepository.save(post);
@@ -115,7 +111,7 @@ public class PostService {
 //        Post post = getPostById(postId);
 //        User user = getUserById(userId);
         if (!user.getLikedPosts().contains(post)){
-            throw new BadRequestExeption("You have to like the post before removing like");
+            throw new BadRequestException("You have to like the post before removing like");
         }
         post.getLikers().remove(user);
         postRepository.save(post);
@@ -128,7 +124,7 @@ public class PostService {
 //        Post post = getPostById(postId);
 //        User user = getUserById(userId);
         if (user.getDislikedPosts().contains(post)){
-            throw new BadRequestExeption("You have already disliked this post");
+            throw new BadRequestException("You have already disliked this post");
         }
         post.getDislikers().add(user);
         postRepository.save(post);
@@ -141,7 +137,7 @@ public class PostService {
 //        Post post = getPostById(postId);
 //        User user = getUserById(userId);
         if (!user.getDislikedPosts().contains(post)){
-            throw new BadRequestExeption("You have to dislike the post before removing dislike");
+            throw new BadRequestException("You have to dislike the post before removing dislike");
         }
         post.getDislikers().remove(user);
         postRepository.save(post);
@@ -164,7 +160,7 @@ public class PostService {
 //        Post post = postRepository.findById(pId).orElseThrow(() -> new NotFoundExeption("Post not found."));
 //        User tagedUser = userRepository.findById(tagUserid).orElseThrow(() -> new NotFoundExeption("User not found"));
         if(post.getUserTagAtPosts().contains(tagedUser)){
-            throw new BadRequestExeption("This user is already tagged in this post");
+            throw new BadRequestException("This user is already tagged in this post");
         }
         post.getUserTagAtPosts().add(tagedUser);
         postRepository.save(post);
@@ -176,10 +172,10 @@ public class PostService {
 //        Post post = postRepository.findById(pId).orElseThrow(() -> new NotFoundExeption("Post not found."));
 //        User tagedUser = userRepository.findById(tagUserid).orElseThrow(() -> new NotFoundExeption("User not found"));
         if(userId!=post.getUser().getId()){
-            throw new UnauthorizedExeption("You can't untag this user,because you aren't the owner of the post");
+            throw new UnauthorizedException("You can't untag this user,because you aren't the owner of the post");
         }
         if(!post.getUserTagAtPosts().contains(tagedUser)){
-            throw new BadRequestExeption("This user isn't tagged in this post");
+            throw new BadRequestException("This user isn't tagged in this post");
         }
         post.getUserTagAtPosts().remove(tagedUser);
         postRepository.save(post);
@@ -189,10 +185,10 @@ public class PostService {
     public List<ResponsePostDTO> findPosts(String username) {
         User user = userRepository.findByUsername(username);
         if(user==null){
-            throw new NotFoundExeption("User not found");
+            throw new NotFoundException("User with this username "+username+" not found");
         }
         if(user.getPosts().isEmpty()){
-            throw  new BadRequestExeption("This user don't have posts ");
+            throw  new BadRequestException("This user don't have posts ");
         }
         List<ResponsePostDTO> postsDTO =  new ArrayList<>();
         for (Post e : user.getPosts()) {
@@ -206,7 +202,7 @@ public class PostService {
         User user = validator.validateUserAndGet(userId);
 //        User user = userRepository.getById(userId);
         if (user.getFollowedUsers().isEmpty()) {
-            throw new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+            throw new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
         //nz dali taka e pravilno da se sortirat
         List<ResponsePostDTO> newsfeed = new ArrayList<>();
@@ -216,7 +212,7 @@ public class PostService {
             }
         }
         if (newsfeed.isEmpty()) {
-            throw new NotFoundExeption("There are no post in your newsfeed.");
+            throw new NotFoundException("There are no post in your newsfeed.");
         }
         newsfeed.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
         return newsfeed;
@@ -224,7 +220,7 @@ public class PostService {
 
     public List<ResponsePostDTO> getNewsfeedWithFilter(long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
-            throw new BadRequestExeption("No such filters");
+            throw new BadRequestException("No such filters");
         }
         List <ResponsePostDTO> sortedNewsfeed = getUnsortedNewsfeed(userId);
         return filterPostsCollection(sortedNewsfeed , filterName);
@@ -232,7 +228,7 @@ public class PostService {
 
     public List<ResponsePostDTO> getAllForeignPosts(long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
-            throw new BadRequestExeption("No such filters");
+            throw new BadRequestException("No such filters");
         }
         List <ResponsePostDTO> sortedForeignPosts = getAllForeignPostsUnsorted(userId);
         return filterPostsCollection(sortedForeignPosts,filterName);
@@ -243,7 +239,7 @@ public class PostService {
     private List<ResponsePostDTO> getUnsortedNewsfeed(long userId){
         User user = userRepository.getById(userId);
         if(user.getFollowedUsers().isEmpty()){
-            throw  new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+            throw  new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
         List <ResponsePostDTO> unsortedNewsfeed = new ArrayList<>();
         for (User currUser : user.getFollowedUsers()) {

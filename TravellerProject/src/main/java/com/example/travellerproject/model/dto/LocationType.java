@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class LocationType {
-   String continent;
+    String continent;
     String  country;
     String  state;
 }

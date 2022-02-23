@@ -37,6 +37,7 @@ public class ResponsePostDTO {
     private String title;
     private List<Image> images;
     private int likes;
+    private int dislikes;
     //private Set<User> likers;
 
 

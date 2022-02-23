@@ -1,6 +1,5 @@
 package com.example.travellerproject.controllers;
-
-import com.example.travellerproject.exeptions.BadRequestExeption;
+import com.example.travellerproject.exceptions.BadRequestException;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.user.*;
 import com.example.travellerproject.model.pojo.User;
@@ -9,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -76,7 +74,7 @@ public class UserController {
             String password = forgottenPassDTO.getNewpassword();
             String confpassword = forgottenPassDTO.getConfnewpassword();
             if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
-                throw new BadRequestExeption("You are already logged in.");
+                throw new BadRequestException("You are already logged in.");
             }
 
             return userService.forgottenPassword(session,email,password,confpassword);
@@ -86,7 +84,7 @@ public class UserController {
         public MessageDTO follow(@PathVariable long id,HttpSession session){
             long userId = sessionValidator.isUserLogedIn(session);
             if(id==userId){
-                throw new BadRequestExeption("You cant subscribe for your own profile");
+                throw new BadRequestException("You can't subscribe for your own profile");
             }
             return userService.follow(userId,id);
 
@@ -95,7 +93,7 @@ public class UserController {
         public MessageDTO unfollow(@PathVariable("id") long id,HttpSession session){
             long userId = sessionValidator.isUserLogedIn(session);
             if(id==userId){
-                throw new BadRequestExeption("You cant unsubscribe for your own profile");
+                throw new BadRequestException("You can't unsubscribe for your own profile");
             }
             return userService.unfollow(userId,id);
 

@@ -24,7 +24,5 @@ public class RequestPostDTO {
     @NotNull
     private String longitude;
     @NotNull
-    private LocalDate createdAt;
-    @NotNull
     private String title;
 }

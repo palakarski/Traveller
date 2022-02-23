@@ -1,9 +1,7 @@
 package com.example.travellerproject.controllers;
-
-import com.example.travellerproject.exeptions.BadRequestExeption;
-import com.example.travellerproject.exeptions.UnauthorizedExeption;
+import com.example.travellerproject.exceptions.BadRequestException;
+import com.example.travellerproject.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Component;
-
 import javax.servlet.http.HttpSession;
 
 @Component
@@ -13,13 +11,13 @@ public class SessionValidator {
 
     public void isUserLoged(HttpSession session){
         if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new UnauthorizedExeption("You must be logged first");
+            throw new UnauthorizedException("You must be logged first");
         }
     }
 
     public long isUserLogedIn (HttpSession session){
         if(session.isNew() || session.getAttribute(LOGGED)==null){
-            throw new UnauthorizedExeption("You must be logged first");
+            throw new UnauthorizedException("You must be logged first");
         }
         return (Long) session.getAttribute(LOGGED);
     }
@@ -34,7 +32,7 @@ public class SessionValidator {
 
     public void isAlreadyLogged(HttpSession session) {
         if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
-            throw new BadRequestExeption("You are already logged in.");
+            throw new BadRequestException("You are already logged in.");
         }
     }
 }

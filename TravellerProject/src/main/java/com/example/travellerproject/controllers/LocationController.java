@@ -1,16 +1,15 @@
 package com.example.travellerproject.controllers;
-
 import com.byteowls.jopencage.JOpenCageGeocoder;
+import com.byteowls.jopencage.model.JOpenCageComponents;
 import com.byteowls.jopencage.model.JOpenCageResponse;
 import com.byteowls.jopencage.model.JOpenCageReverseRequest;
-import com.example.travellerproject.model.dto.LocationType;
+import com.example.travellerproject.exceptions.NotFoundException;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.services.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -22,7 +21,7 @@ public class LocationController {
     private SessionValidator sessionValidator;
 
     @GetMapping(value = "/post/{postId}/location")
-    public LocationType showLocation(@PathVariable long postId, HttpServletResponse response, HttpSession session){
+    public JOpenCageComponents showLocation(@PathVariable long postId, HttpServletResponse response, HttpSession session){
         sessionValidator.isUserLoged(session);
         Post post =  validator.validatePostAndGet(postId);
         double latitude= Double.parseDouble(post.getLatitude());
@@ -33,11 +32,13 @@ public class LocationController {
         request.setNoAnnotations(true);
 
         JOpenCageResponse responseJ = jOpenCageGeocoder.reverse(request);
-        LocationType locationType = new LocationType();
-        locationType.setContinent(responseJ.getFirstComponents().getContinent());
-        locationType.setCountry(responseJ.getFirstComponents().getCountry());
-        locationType.setState(responseJ.getFirstComponents().getState());
-        //TODO
-        return  locationType;
+//        JOpenCageComponents  responseis= responseJ.getResults().stream().findAny().orElseThrow(() -> new NotFoundException("Location is ")).getComponents();
+        return responseJ.getResults().stream().findAny().orElseThrow(() -> new NotFoundException("Location is compromised.")).getComponents();
+//        LocationType locationType = new LocationType();
+//        locationType.setContinent(responseJ.getFirstComponents().getContinent());
+//        locationType.setCountry(responseJ.getFirstComponents().getCountry());
+//        locationType.setState(responseJ.getFirstComponents().getState());
+//        //TODO
+//        return  locationType;
     }
 }

@@ -7,8 +7,8 @@ Content-Type: application/json
 {
   "description":"",
   "postCategory": 3,
-  "latitude":"-90.9123",
-  "longitude": "180",
+  "latitude":"42.830459",
+  "longitude": "22.641374",
   "createdAt": "2022-02-02",
   "title": "Mnogo qk proekt.Zavijdaite"
 }
@@ -47,6 +47,6 @@ GET http://localhost:8080/posts/allForeignPosts/date
 ###
 GET http://localhost:8080/posts/allForeignPosts/like
 ###
-GET http://localhost:8080/post/2/location
+GET http://localhost:8080/post/3/location
 
 

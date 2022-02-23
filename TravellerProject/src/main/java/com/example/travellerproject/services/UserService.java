@@ -1,8 +1,8 @@
 package com.example.travellerproject.services;
 
-import com.example.travellerproject.exeptions.AuthenticationExeption;
-import com.example.travellerproject.exeptions.BadRequestExeption;
-import com.example.travellerproject.exeptions.NotFoundExeption;
+import com.example.travellerproject.exceptions.AuthenticationException;
+import com.example.travellerproject.exceptions.BadRequestException;
+import com.example.travellerproject.exceptions.NotFoundException;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.user.ChangePasswordDTO;
 import com.example.travellerproject.model.dto.user.UserRegisterDTO;
@@ -12,20 +12,15 @@ import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Log4j2
 @Service
@@ -131,12 +126,12 @@ public class UserService {
                 return userWithOutPassDTO;
             }
             else{
-                throw new NotFoundExeption("User not found");
+                throw new NotFoundException("User not found");
             }
         }
 
     public void deleteAcc(long id) {
-            User u = userRepository.findById(id).orElseThrow(() ->new NotFoundExeption("User not found with id " + id) );
+            User u = userRepository.findById(id).orElseThrow(() ->new NotFoundException("User not found with id " + id) );
             userRepository.delete(u);
     }
 
@@ -147,7 +142,7 @@ public class UserService {
         String oldpassword = changePasswordDTO.getOldpassword();
 
         if(!passwordEncoder.matches(oldpassword,u.getPassword())) {
-            throw new AuthenticationExeption("Oldpassword doesnt match");
+            throw new AuthenticationException("Oldpassword doesnt match");
         }
 //        if(!newpassword.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
 //            throw new BadRequestExeption("Password must contains at least 8 numbers and 2 charsequences");
@@ -179,10 +174,10 @@ public class UserService {
     }
 
         public MessageDTO follow(long userId, long id) {
-            User subcriber = userRepository.findById(userId).orElseThrow(()-> new NotFoundExeption("No such a user"));;
-            User subscribedFor = userRepository.findById(id).orElseThrow(()-> new NotFoundExeption("No such a user"));
+            User subcriber = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("No such a user"));;
+            User subscribedFor = userRepository.findById(id).orElseThrow(()-> new NotFoundException("No such a user"));
             if(subcriber.getFollowedUsers().contains(subscribedFor)){
-                throw new BadRequestExeption("Sorry you have already followed this user.");
+                throw new BadRequestException("Sorry you have already followed this user.");
             }
             subcriber.getFollowedUsers().add(subscribedFor);
             userRepository.save(subcriber);
@@ -190,10 +185,10 @@ public class UserService {
         }
 
     public MessageDTO unfollow(long userId, long id) {
-        User subcriber = userRepository.findById(userId).orElseThrow(()-> new NotFoundExeption("No such a user"));
-        User subscribedFor = userRepository.findById(id).orElseThrow(()-> new NotFoundExeption("No such a user"));
+        User subcriber = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("No such a user"));
+        User subscribedFor = userRepository.findById(id).orElseThrow(()-> new NotFoundException("No such a user"));
         if(!subcriber.getFollowedUsers().contains(subscribedFor)){
-            throw new BadRequestExeption("Sorry you dont follow this user.");
+            throw new BadRequestException("Sorry you dont follow this user.");
         }
         subcriber.getFollowedUsers().remove(subscribedFor);
         userRepository.save(subcriber);
