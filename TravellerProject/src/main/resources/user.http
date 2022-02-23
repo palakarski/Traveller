@@ -33,7 +33,7 @@ GET http://localhost:8080/users/find/palakarski8
 POST http://localhost:8080/register
 Content-Type: application/json
 
-http://localhost:8080/register
+
 ### //Valid Registration
 POST http://localhost:8080/register
 Content-Type: application/json
@@ -58,7 +58,7 @@ Content-Type: application/json
   "lastName":"Rangelov",
   "username":"palakarski3",
   "birthDate":"1993-02-22",
-  "email":"palakarski3",
+  "email":"palakarski3@jjn",
   "password":"palakarski3@",
   "confpassword":"palakarski3@",
   "createdAt":"1993-02-22T00:00:00",
@@ -161,8 +161,8 @@ Content-Type: application/json
 
 {
 
-"username":"palakarski2",
-"password":"palakarski1@"
+"username":"palakarski3",
+"password":"palakarski3@"
 
 }
 ###
@@ -220,7 +220,7 @@ DELETE http://localhost:8080/delete
 ###
 POST http://localhost:8080/user/1/follow
 ###
-POST http://localhost:8080/user/5/follow
+POST http://localhost:8080/user/4/follow
 
 ###
 POST http://localhost:8080/user/3/unfollow

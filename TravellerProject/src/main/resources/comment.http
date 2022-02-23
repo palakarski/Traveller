@@ -1,16 +1,17 @@
 ###
-POST http://localhost:8080/comment/create/post/3
+POST http://localhost:8080/comment/create/post/22
 Content-Type: application/json
 
 {
-  "text": "Male bahti tupiq post",
-  "createdAt": "2022-02-02"
+  "text": "Male bahti tupiq post"
+
 }
 ###
-POST http://localhost:8080/comments/2/like
+GET http://localhost:8080/comment/22
 ###
-POST http://localhost:8080/comments/2/undoLike
+
+POST http://localhost:8080/comments/24/like
 ###
-POST http://localhost:8080/comments/2/dislike
+POST http://localhost:8080/comments/23/dislike
 ###
 POST http://localhost:8080/comments/2/undoDislike

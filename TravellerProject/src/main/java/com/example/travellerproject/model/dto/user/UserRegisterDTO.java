@@ -30,8 +30,6 @@ public class UserRegisterDTO {
     @NotNull
     private String confpassword;
     @NotNull
-    private LocalDateTime createdAt;
-    @NotNull
     private boolean isAdmin;
 
     private char gender;

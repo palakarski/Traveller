@@ -27,18 +27,10 @@ public class LocationController {
         double latitude= Double.parseDouble(post.getLatitude());
         double longitude= Double.parseDouble(post.getLongitude());
         JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder("888c26957bef430fa93e1acfea8cda64");
-
         JOpenCageReverseRequest request = new JOpenCageReverseRequest(latitude, longitude);
         request.setNoAnnotations(true);
-
         JOpenCageResponse responseJ = jOpenCageGeocoder.reverse(request);
-//        JOpenCageComponents  responseis= responseJ.getResults().stream().findAny().orElseThrow(() -> new NotFoundException("Location is ")).getComponents();
         return responseJ.getResults().stream().findAny().orElseThrow(() -> new NotFoundException("Location is compromised.")).getComponents();
-//        LocationType locationType = new LocationType();
-//        locationType.setContinent(responseJ.getFirstComponents().getContinent());
-//        locationType.setCountry(responseJ.getFirstComponents().getCountry());
-//        locationType.setState(responseJ.getFirstComponents().getState());
-//        //TODO
-//        return  locationType;
+
     }
 }

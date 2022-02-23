@@ -7,7 +7,7 @@ import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.comment.CommentRequestDTO;
 import com.example.travellerproject.model.dto.comment.CommentResponseDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
-import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
+import com.example.travellerproject.model.dto.user.OwnerOfPostOrCommentDTO;
 import com.example.travellerproject.model.pojo.Comment;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.User;
@@ -15,6 +15,8 @@ import com.example.travellerproject.repositories.CommentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class CommentService {
@@ -34,14 +36,13 @@ public class CommentService {
         if(commentRequestDTO.getText()==null||commentRequestDTO.getText().isBlank()){
             throw new BadRequestException("Cannot post empty comment");
         }
-        Comment comment = modelMapper.map(commentRequestDTO,Comment.class);
+        Comment comment = new Comment();
+        comment.setText(commentRequestDTO.getText());
         comment.setUser(user);
         comment.setPost(post);
+        comment.setCreatedAt(LocalDate.now());
         commentRepository.save(comment);
-        CommentResponseDTO  commentResponseDTO= modelMapper.map(comment,CommentResponseDTO.class);
-        commentResponseDTO.setResponsePostDTO(modelMapper.map(post, ResponsePostDTO.class));
-        commentResponseDTO.setOwnerOfPostDTO(modelMapper.map(user, OwnerOfPostDTO.class));
-        return commentResponseDTO;
+        return new CommentResponseDTO(comment);
     }
 
 
@@ -57,10 +58,7 @@ public class CommentService {
 
     public CommentResponseDTO getById(long commentId) {
         Comment comment = validator.validateCommentAndGet(commentId);
-        CommentResponseDTO commentResponseDTO = modelMapper.map(comment,CommentResponseDTO.class);
-        commentResponseDTO.setOwnerOfPostDTO(modelMapper.map(comment.getUser(),OwnerOfPostDTO.class));
-        commentResponseDTO.setResponsePostDTO(modelMapper.map(comment.getPost(),ResponsePostDTO.class));
-        return commentResponseDTO;
+        return new CommentResponseDTO(comment);
     }
 
     public CommentResponseDTO editComment(CommentRequestDTO commentRequestDTO,long commentId,long userId) {
@@ -71,10 +69,8 @@ public class CommentService {
         }
         modelMapper.map(commentRequestDTO,comment);
         commentRepository.save(comment);
-        CommentResponseDTO commentResponseDTO = modelMapper.map(comment,CommentResponseDTO.class);
-        commentResponseDTO.setOwnerOfPostDTO(modelMapper.map(comment.getUser(),OwnerOfPostDTO.class));
-        commentResponseDTO.setResponsePostDTO(modelMapper.map(comment.getPost(),ResponsePostDTO.class));
-        return commentResponseDTO;
+
+        return new CommentResponseDTO(comment);
     }
 
     //ByIvan
@@ -83,6 +79,9 @@ public class CommentService {
         User user = validator.validateUserAndGet(userId);
         if (user.getLikedComments().contains(comment)){
             throw new BadRequestException("You have already liked this comment");
+        }
+        if (user.getDislikedComments().contains(comment)){
+            throw new BadRequestException("You have disliked this comment.Please undo it.");
         }
         comment.getCommentLikers().add(user);
         commentRepository.save(comment);
@@ -107,6 +106,9 @@ public class CommentService {
         if (user.getDislikedComments().contains(comment)){
             throw new BadRequestException("You have already disliked this comment");
         }
+        if (user.getLikedComments().contains(comment)){
+            throw new BadRequestException("You have liked this comment.Please undo it.");
+        }
         comment.getCommentDislikers().add(user);
         commentRepository.save(comment);
         return new LikeDislikeMessageDTO("You have disliked a comment",comment.getCommentDislikers().size());
@@ -124,12 +126,4 @@ public class CommentService {
         return new LikeDislikeMessageDTO("You have undid your dislike",comment.getCommentDislikers().size());
     }
 
-
-//    private User getUserById(long userId) {
-//        return userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
-//    }
-//
-//    private Comment getCommentById(long commentId) {
-//        return commentRepository.findById(commentId).orElseThrow(()->new NotFoundExeption("Comment not found"));
-//    }
 }

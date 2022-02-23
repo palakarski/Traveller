@@ -1,6 +1,5 @@
 package com.example.travellerproject.model.dto.post;
 
-import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.PostCategory;
 import com.sun.istack.NotNull;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +28,8 @@ public class ResponseWithoutOwnerDTO {
     private LocalDate createdAt;
     @NotNull
     private String title;
+    private int likes;
+    private int dislikes;
 
 
     public ResponseWithoutOwnerDTO(Post post){
@@ -39,5 +40,7 @@ public class ResponseWithoutOwnerDTO {
         this.longitude = post.getLongitude();
         this.createdAt = post.getCreatedAt();
         this.title = post.getTitle();
+        this.likes=post.getLikers().size();
+        this.dislikes=post.getDislikers().size();
     }
 }

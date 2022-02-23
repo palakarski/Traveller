@@ -12,8 +12,8 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController {
-    private static final String LOGGED ="logged";
-    private static final String LOGGED_IN = "logged_in";
+
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -63,21 +63,17 @@ public class UserController {
         return new MessageDTO("Account has been deleted");
         }
         @PutMapping(value = "/changepass")
-        public MessageDTO changePass(HttpSession session, @RequestBody ChangePasswordDTO changePasswordDTO){
+        public MessageDTO changePass(HttpSession session, @RequestBody UserChangePasswordDTO changePasswordDTO){
             long id = sessionValidator.isUserLogedIn(session);
             return userService.changePassword(id,changePasswordDTO);
 
         }
         @PutMapping(value = "/forgotten_password")
-        public MessageDTO forgottenPass(HttpSession session, @RequestBody ForgottenPassDTO forgottenPassDTO){
-            String email = forgottenPassDTO.getEmail();
-            String password = forgottenPassDTO.getNewpassword();
-            String confpassword = forgottenPassDTO.getConfnewpassword();
-            if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
-                throw new BadRequestException("You are already logged in.");
-            }
+        public MessageDTO forgottenPass(HttpSession session, @RequestBody UserForgottenPassDTO forgottenPassDTO){
 
-            return userService.forgottenPassword(session,email,password,confpassword);
+            sessionValidator.isAlreadyLogged(session);
+
+            return userService.forgottenPassword(session,forgottenPassDTO);
         }
 
         @PostMapping(value = "/user/{id}/follow")

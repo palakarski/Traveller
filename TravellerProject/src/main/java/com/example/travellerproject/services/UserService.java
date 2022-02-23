@@ -4,7 +4,8 @@ import com.example.travellerproject.exceptions.AuthenticationException;
 import com.example.travellerproject.exceptions.BadRequestException;
 import com.example.travellerproject.exceptions.NotFoundException;
 import com.example.travellerproject.model.dto.MessageDTO;
-import com.example.travellerproject.model.dto.user.ChangePasswordDTO;
+import com.example.travellerproject.model.dto.user.UserChangePasswordDTO;
+import com.example.travellerproject.model.dto.user.UserForgottenPassDTO;
 import com.example.travellerproject.model.dto.user.UserRegisterDTO;
 import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
 import com.example.travellerproject.model.pojo.User;
@@ -18,7 +19,6 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Properties;
 
@@ -35,19 +35,7 @@ public class UserService {
     private ModelMapper modelMapper;
 
         public User login(String username, String password){
-//            if(username== null || username.isBlank()){
-//             throw new BadRequestExeption("Username is mandatory");
-//            }
-//
-//            if(password == null|| password.isBlank()){
-//                throw  new BadRequestExeption("Password is mandatory");
-//            }
-//            User u = userRepository.findByUsername(username);
-//            if(u == null || !passwordEncoder.matches(password,u.getPassword())){
-//                throw new UnauthorizedExeption("Wrong credentials");
-//            }
-//
-//            return u;
+
             validator.validateUsername(username);
             validator.validPassword(password);
             return validator.validateUsernameAndPassword(username,password);
@@ -55,50 +43,18 @@ public class UserService {
         }
 
         public User register(UserRegisterDTO dto){
-            String username =  dto.getUsername();
-            String password = dto.getPassword();
-            String confpass = dto.getConfpassword();
-            String firstname = dto.getFirstName();
-            String lastname = dto.getLastName();
-            LocalDate birthDate = dto.getBirthDate();
-            LocalDateTime createdAt = dto.getCreatedAt();
-            String email = dto.getEmail();
-            //TODO register more validation
-//            if(username == null || username.isBlank()){
-//                throw new BadRequestExeption("Username is mandatory");
-//            }
-//            if(username.length()<5){
-//                throw new BadRequestExeption("Username must be atleast 8 symbols");
-//            }
-//            if(password == null || password.isBlank()){
-//                throw new BadRequestExeption("Password is mandatory");
-//            }
-//            if(userRepository.findByUsername(username)!=null){
-//                throw new BadRequestExeption("Username is already taken.");
-//            }
-//            if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-//                throw new BadRequestExeption("Wrong email.");
-//            }
-//
-//            if(!password.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
-//                throw new BadRequestExeption("Password must contains at least 8 numbers and 2 charsequences");
-//            }
-//            if(!password.equals(confpass)){
-//                throw new BadRequestExeption("Passwords doesnt match");
-//            }
-//            if(userRepository.findByEmail(email)!=null){
-//                throw new BadRequestExeption("Email is already taken");
-//            }
-            validator.validateUsername(username);
-            validator.checkUsernameUnique(username);
-            validator.validPassword(password);
-            validator.matchPassAndConfPass(password,confpass);
-            validator.validEmail(email);
-            validator.validateFirstnameAndLastName(firstname,lastname);
-            validator.validateDateOfBirth(birthDate);
+
+            validator.validateUsername(dto.getUsername());
+            validator.checkUsernameUnique(dto.getUsername());
+            validator.validPassword(dto.getPassword());
+            validator.matchPassAndConfPass(dto.getPassword(),dto.getConfpassword());
+            validator.validEmail(dto.getEmail());
+            validator.validateFirstnameAndLastName(dto.getFirstName(),dto.getLastName());
+            validator.validateDateOfBirth(dto.getBirthDate());
 
             User u = modelMapper.map(dto,User.class);
-            u.setPassword(passwordEncoder.encode(password));
+            u.setPassword(passwordEncoder.encode(dto.getPassword()));
+            u.setCreatedAt(LocalDateTime.now());
             userRepository.save(u);
             sendEmail("palakarski@gmail.com");
             return u;
@@ -108,14 +64,7 @@ public class UserService {
         public UserWithOutPassDTO getById(long id){
             User user = validator.validateUserAndGet(id);
             return modelMapper.map(user,UserWithOutPassDTO.class);
-//            Optional<User> u = userRepository.findById(id);
-//            if(u.isPresent()) {
-//                UserWithOutPassDTO userWithOutPassDTO = new UserWithOutPassDTO(u.get());
-//                return userWithOutPassDTO;
-//            }
-//            else{
-//                throw new NotFoundExeption("User not found");
-//            }
+
         }
 
 
@@ -135,64 +84,54 @@ public class UserService {
             userRepository.delete(u);
     }
 
-    public MessageDTO changePassword(long id, ChangePasswordDTO changePasswordDTO) {
+    public MessageDTO changePassword(long id, UserChangePasswordDTO changePasswordDTO) {
         User u = validator.validateUserAndGet(id);
         String newpassword = changePasswordDTO.getNewpassword();
         String confnewpassword = changePasswordDTO.getConfnewpassword();
         String oldpassword = changePasswordDTO.getOldpassword();
 
         if(!passwordEncoder.matches(oldpassword,u.getPassword())) {
-            throw new AuthenticationException("Oldpassword doesnt match");
+            throw new AuthenticationException("Oldpassword doesnt match.");
         }
-//        if(!newpassword.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
-//            throw new BadRequestExeption("Password must contains at least 8 numbers and 2 charsequences");
-//        }
-//        if(!newpassword.equals(confnewpassword)){
-//            throw new BadRequestExeption("Passwords need to match");
-//        }
+
         validator.validPassword(newpassword);
         validator.matchPassAndConfPass(newpassword,confnewpassword);
         u.setPassword(passwordEncoder.encode(newpassword));
         userRepository.save(u);
-        return new MessageDTO("Password was changed");
+        return new MessageDTO("Password was changed.");
     }
 
-    public MessageDTO forgottenPassword(HttpSession session, String email, String password, String repeatedNewPass) {
-//            if(userRepository.findByEmail(email)==null){
-//                throw new BadRequestExeption("We dont have user with this email");
-//            }
-//            if(!password.equals(repeatedNewPass)){
-//                throw new BadRequestExeption("Password and confirm password doesnt match");
-//            }
-            validator.validateUserByEmail(email);
-            validator.matchPassAndConfPass(password,repeatedNewPass);
-            User u = userRepository.findByEmail(email);
-            u.setPassword(passwordEncoder.encode(password));
+    public MessageDTO forgottenPassword(HttpSession session, UserForgottenPassDTO dto) {
+
+            validator.validateUserByEmail(dto.getEmail());
+            validator.matchPassAndConfPass(dto.getNewpassword(), dto.getConfnewpassword());
+            User u = userRepository.findByEmail(dto.getEmail());
+            u.setPassword(passwordEncoder.encode(dto.getNewpassword()));
             userRepository.save(u);
-            return new MessageDTO("Password was changed you can login now");
+            return new MessageDTO("Password was changed you can login now.");
 
     }
 
-        public MessageDTO follow(long userId, long id) {
-            User subcriber = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("No such a user"));;
-            User subscribedFor = userRepository.findById(id).orElseThrow(()-> new NotFoundException("No such a user"));
-            if(subcriber.getFollowedUsers().contains(subscribedFor)){
-                throw new BadRequestException("Sorry you have already followed this user.");
-            }
-            subcriber.getFollowedUsers().add(subscribedFor);
-            userRepository.save(subcriber);
-            return new MessageDTO("You have subscribe for " + subscribedFor);
+    public MessageDTO follow(long userId, long subcribedForId) {
+        User subcriber = validator.validateUserAndGet(userId);
+        User subscribedFor = validator.validateUserAndGet(subcribedForId);
+        if(subcriber.getFollowedUsers().contains(subscribedFor)){
+            throw new BadRequestException("Sorry you have already followed this user.");
         }
+        subcriber.getFollowedUsers().add(subscribedFor);
+        userRepository.save(subcriber);
+        return new MessageDTO("You have subscribe for user with id " + subcribedForId);
+    }
 
-    public MessageDTO unfollow(long userId, long id) {
-        User subcriber = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("No such a user"));
-        User subscribedFor = userRepository.findById(id).orElseThrow(()-> new NotFoundException("No such a user"));
+    public MessageDTO unfollow(long userId, long subcribedForId) {
+        User subcriber = validator.validateUserAndGet(userId);
+        User subscribedFor = validator.validateUserAndGet(subcribedForId);
         if(!subcriber.getFollowedUsers().contains(subscribedFor)){
             throw new BadRequestException("Sorry you dont follow this user.");
         }
         subcriber.getFollowedUsers().remove(subscribedFor);
         userRepository.save(subcriber);
-        return new MessageDTO("You have unsubscribe for " + subscribedFor);
+        return new MessageDTO("You have unsubscribe for user with id " + subcribedForId);
     }
     private void sendEmail(String recepient){
         Properties properties = new Properties();

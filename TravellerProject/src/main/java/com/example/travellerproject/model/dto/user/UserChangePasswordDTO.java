@@ -8,11 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ForgottenPassDTO {
+public class UserChangePasswordDTO {
     @NotNull
-    private String email;
+    private String oldpassword;
     @NotNull
     private String newpassword;
     @NotNull
     private String confnewpassword;
+
 }
