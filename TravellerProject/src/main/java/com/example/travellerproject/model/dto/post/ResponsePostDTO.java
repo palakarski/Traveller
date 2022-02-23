@@ -1,18 +1,15 @@
 package com.example.travellerproject.model.dto.post;
 
-import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
-import com.example.travellerproject.model.pojo.Image;
-import com.example.travellerproject.model.pojo.Post;
-import com.example.travellerproject.model.pojo.PostCategory;
-import com.example.travellerproject.model.pojo.User;
+import com.example.travellerproject.model.dto.user.OwnerOfPostOrCommentDTO;
+import com.example.travellerproject.model.pojo.*;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -22,7 +19,7 @@ public class ResponsePostDTO {
     @NotNull
     private long id;
     @NotNull
-    private OwnerOfPostDTO user;
+    private OwnerOfPostOrCommentDTO user;
 
     private String description;
     @NotNull
@@ -36,6 +33,8 @@ public class ResponsePostDTO {
     @NotNull
     private String title;
     private List<Image> images;
+    private List<Video> video;
+    private List<OwnerOfPostOrCommentDTO> tagsWithUsers;
     private int likes;
     private int dislikes;
     //private Set<User> likers;
@@ -44,7 +43,7 @@ public class ResponsePostDTO {
 
     public ResponsePostDTO(Post post){
                 this.id = post.getId();
-                this.user = new OwnerOfPostDTO(post.getUser());
+                this.user = new OwnerOfPostOrCommentDTO(post.getUser());
                 this.description = post.getDescription();
                 this.postCategory = post.getPostCategory();
                 this.latitude = post.getLatitude();
@@ -52,6 +51,12 @@ public class ResponsePostDTO {
                 this.createdAt = post.getCreatedAt();
                 this.title = post.getTitle();
                 this.images=post.getImages();
-                //this.likers = post.getLikers();
+                this.video =post.getVideos();
+                this.tagsWithUsers = new ArrayList<>();
+                for (User user : post.getUserTagAtPosts()) {
+                    tagsWithUsers.add(new OwnerOfPostOrCommentDTO(user));
+                }
+                this.likes=post.getLikers().size();
+                this.dislikes=post.getDislikers().size();
             }
 }

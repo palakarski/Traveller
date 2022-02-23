@@ -4,9 +4,11 @@ import com.example.travellerproject.exceptions.NotFoundException;
 import com.example.travellerproject.exceptions.UnauthorizedException;
 import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
+import com.example.travellerproject.model.dto.comment.CommentResponseDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
-import com.example.travellerproject.model.dto.user.OwnerOfPostDTO;
+import com.example.travellerproject.model.dto.user.OwnerOfPostOrCommentDTO;
+import com.example.travellerproject.model.pojo.Comment;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.PostRepository;
@@ -15,6 +17,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -30,112 +34,93 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Transactional
     public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userId) {
         long postCategoryId = requestPostDTO.getPostCategory();
-
         validator.validateTitle(requestPostDTO.getTitle());
         validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
         Post post = modelMapper.map(requestPostDTO, Post.class);
         post.setUser(validator.validateUserAndGet(userId));
         post.setPostCategory(validator.validateCategory(postCategoryId));
         post.setCreatedAt(LocalDate.now());
-//        if (requestPostDTO.getLatitude().isBlank() ||
-//                requestPostDTO.getLongitude().isBlank() ||
-//                requestPostDTO.getTitle().isBlank()) {
-//            throw new BadRequestExeption("Wrong declaration of the post");
-//        }
-//
-//
-//        post.setPostCategory(postCategotyRepository.findById(postCategoryId).orElseThrow(() -> new NotFoundExeption("Post Category not found " + postCategoryId)));
-//        post.setUser(userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found with id " + userId)));
         postRepository.save(post);
-        ResponsePostDTO responsePostDTO = modelMapper.map(post, ResponsePostDTO.class);
-        responsePostDTO.setUser(new OwnerOfPostDTO(userRepository.getById(userId)));
-        //TODO location
-        return responsePostDTO;
+        return new ResponsePostDTO(post);
     }
 
     public ResponsePostDTO getById(long id) {
-        Post post = validator.validatePostAndGet(id);
-        return modelMapper.map(post,ResponsePostDTO.class);
-//        Optional<Post> post = postRepository.findById(id);
-//        if(post.isPresent()){
-//            return modelMapper.map(post.get(),ResponsePostDTO.class);
-//        }
-//        else{
-//            throw new BadRequestExeption("Post doesnt exist");
-//        }
-    }
 
+        Post post = validator.validatePostAndGet(id);
+        return new ResponsePostDTO(post);
+
+    }
     public MessageDTO deletePost(long id) {
+
         Post post = validator.validatePostAndGet(id);
         postRepository.delete(post);
         return new MessageDTO("Post deleted");
-//        Optional<Post> post = postRepository.findById(id);
-//        if(post.isPresent()){
-//            postRepository.delete(post.get());
-//            return new MessageDTO("Post deleted");
-//        }
-//        else{
-//            throw new BadRequestExeption("Post doesnt exist");
-//        }
+
     }
 
+    @Transactional
     public ResponsePostDTO editPost(RequestPostDTO requestPostDTO, long id,long userId) {
         Post post = validator.validatePostAndGet(id);
         validator.validateUserAndPostOwnership(post,userId);
-//        Post post = postRepository.findById(id).orElseThrow(()-> new NotFoundExeption("No such a post"));
-//        if(post.getUser().getId()!=userId){
-//            throw new BadRequestExeption("You are not owner of this post");
-//        }
+        validator.validateTitle(requestPostDTO.getTitle());
+        validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
+        validator.validateCategory(requestPostDTO.getPostCategory());
         modelMapper.map(requestPostDTO,post);
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
     }
+
+    @Transactional
     public LikeDislikeMessageDTO likePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
-//        Post post = getPostById(postId);
-//        User user = getUserById(userId);
         if (user.getLikedPosts().contains(post)){
             throw new BadRequestException("You have already liked this post");
+        }
+        if (user.getDislikedPosts().contains(post)){
+            throw new BadRequestException("You have disliked this post.Please undo it.");
         }
         post.getLikers().add(user);
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have liked a post",post.getLikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO undoLikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
-//        Post post = getPostById(postId);
-//        User user = getUserById(userId);
         if (!user.getLikedPosts().contains(post)){
             throw new BadRequestException("You have to like the post before removing like");
         }
+
         post.getLikers().remove(user);
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have undid your like  ",post.getLikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO dislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
-//        Post post = getPostById(postId);
-//        User user = getUserById(userId);
         if (user.getDislikedPosts().contains(post)){
             throw new BadRequestException("You have already disliked this post");
+        }
+        if (user.getLikedPosts().contains(post)){
+            throw new BadRequestException("You have liked this post.Please undo it.");
         }
         post.getDislikers().add(user);
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have disliked a post ",post.getDislikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO undoDislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
-//        Post post = getPostById(postId);
-//        User user = getUserById(userId);
         if (!user.getDislikedPosts().contains(post)){
             throw new BadRequestException("You have to dislike the post before removing dislike");
         }
@@ -144,21 +129,11 @@ public class PostService {
         return new LikeDislikeMessageDTO("You have undid your dislike  ",post.getDislikers().size());
     }
 
-//
-//    private User getUserById(long userId) {
-//        return userRepository.findById(userId).orElseThrow(() -> new NotFoundExeption("User not found"));
-//    }
-//
-//    private Post getPostById(long postId) {
-//        return postRepository.findById(postId).orElseThrow(()->new NotFoundExeption("Post not found"));
-//    }
-
+    @Transactional
     public MessageDTO tagUser(long userId, long tagUserid, long pId) {
 
         Post post = validator.validatePostAndGet(pId);
         User tagedUser = validator.validateUserAndGet(tagUserid);
-//        Post post = postRepository.findById(pId).orElseThrow(() -> new NotFoundExeption("Post not found."));
-//        User tagedUser = userRepository.findById(tagUserid).orElseThrow(() -> new NotFoundExeption("User not found"));
         if(post.getUserTagAtPosts().contains(tagedUser)){
             throw new BadRequestException("This user is already tagged in this post");
         }
@@ -166,11 +141,11 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have tagged " + tagUserid);
     }
+
+    @Transactional
     public MessageDTO unTagUser(long userId, long tagUserid, long pId) {
         Post post = validator.validatePostAndGet(pId);
         User tagedUser = validator.validateUserAndGet(tagUserid);
-//        Post post = postRepository.findById(pId).orElseThrow(() -> new NotFoundExeption("Post not found."));
-//        User tagedUser = userRepository.findById(tagUserid).orElseThrow(() -> new NotFoundExeption("User not found"));
         if(userId!=post.getUser().getId()){
             throw new UnauthorizedException("You can't untag this user,because you aren't the owner of the post");
         }
@@ -181,6 +156,7 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have untagged " + tagUserid);
     }
+
 
     public List<ResponsePostDTO> findPosts(String username) {
         User user = userRepository.findByUsername(username);
@@ -200,7 +176,6 @@ public class PostService {
 
     public List<ResponsePostDTO> getNewsfeed(long userId) {
         User user = validator.validateUserAndGet(userId);
-//        User user = userRepository.getById(userId);
         if (user.getFollowedUsers().isEmpty()) {
             throw new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
@@ -226,7 +201,7 @@ public class PostService {
         return filterPostsCollection(sortedNewsfeed , filterName);
     }
 
-    public List<ResponsePostDTO> getAllForeignPosts(long userId, String filterName){
+    public List<ResponsePostDTO> getAllForeignPostsFiltered(long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
@@ -282,21 +257,31 @@ public class PostService {
         return collection;
     }
 
-
-    /*
-    private List<ResponsePostDTO> getUnsortedNewsfeed(long userId){
-        User user = userRepository.getById(userId);
-        if(user.getFollowedUsers().isEmpty()){
-            throw  new BadRequestExeption("You must have at least  one subscription for your newsfeed.");
+    public List<CommentResponseDTO> findComments(long postId) {
+        Post post = validator.validatePostAndGet(postId);
+        List<CommentResponseDTO>  comments= new ArrayList<>();
+        for (Comment c: post.getComments()) {
+            comments.add(new CommentResponseDTO(c));
         }
-        List <ResponsePostDTO> unsortedNewsfeed = new ArrayList<>();
-        for (User currUser : user.getFollowedUsers()) {
-            for (Post post : currUser.getPosts()) {
-                unsortedNewsfeed.add(modelMapper.map(post, ResponsePostDTO.class));
-            }
+        if(comments.isEmpty()){
+            throw new BadRequestException("No comments found for this post");
         }
-        return  unsortedNewsfeed;
+        return comments;
     }
 
-     */
+    public List<ResponsePostDTO> getAllForeignPosts(long userId) {
+        return getAllForeignPostsUnsorted(userId);
+    }
+
+    public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(long userId, long pId) {
+        Post post = validator.validatePostAndGet(pId);
+        List<OwnerOfPostOrCommentDTO> tagedUsers = new ArrayList<>();
+        if(post.getUserTagAtPosts().isEmpty()){
+            throw new BadRequestException("No tagged users found.");
+        }
+        for (User u : post.getUserTagAtPosts()) {
+            tagedUsers.add(new OwnerOfPostOrCommentDTO(u));
+        }
+        return tagedUsers;
+    }
 }

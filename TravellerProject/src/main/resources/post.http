@@ -1,5 +1,5 @@
 ###
-GET http://localhost:8080/post/2
+GET http://localhost:8080/post/3
 ###
 POST http://localhost:8080/post/create
 Content-Type: application/json
@@ -27,13 +27,13 @@ Content-Type: application/json
   "title": "she mu eba malallalalalalalaaiakata"
 }
 ###
-POST http://localhost:8080/posts/8/like
+POST http://localhost:8080/posts/3/like
 ###
-POST http://localhost:8080/posts/7/undoLike
+POST http://localhost:8080/posts/3/undoLike
 ###
-POST http://localhost:8080/posts/2/dislike
+POST http://localhost:8080/posts/3/dislike
 ###
-POST http://localhost:8080/posts/2/undoDislike
+POST http://localhost:8080/posts/3/undoDislike
 ###
 GET http://localhost:8080/posts/newsfeed/category
 ###

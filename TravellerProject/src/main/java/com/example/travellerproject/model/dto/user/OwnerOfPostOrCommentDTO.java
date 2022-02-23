@@ -8,13 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OwnerOfPostDTO {
+public class OwnerOfPostOrCommentDTO {
     private long id;
     private String username;
     private String firstName;
     private String lastName;
 
-    public  OwnerOfPostDTO(User user){
+    public OwnerOfPostOrCommentDTO(User user){
         this.id = user.getId();
         this.username=user.getUsername();
         this.firstName = user.getFirstName();

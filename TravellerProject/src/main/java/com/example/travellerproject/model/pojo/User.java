@@ -53,14 +53,14 @@ public class User {
     @Column
     private char gender;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",cascade = { CascadeType.ALL })
     @JsonManagedReference
     private List<Post> posts ;
 
     @ManyToMany(mappedBy = "followedUsers")
     private List<User> followers;
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
             name ="subscribers",
             joinColumns = {@JoinColumn (name = "subscriber_id")},
@@ -68,23 +68,23 @@ public class User {
     )
     private List<User> followedUsers ;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",cascade = { CascadeType.ALL })
     @JsonBackReference
     private List<Comment> comments ;
 
-    @ManyToMany(mappedBy ="userTagAtPosts" )
+    @ManyToMany(mappedBy ="userTagAtPosts",cascade = { CascadeType.ALL } )
     private List<Post> tagsAtPosts;
 
-    @ManyToMany(mappedBy = "likers")
+    @ManyToMany(mappedBy = "likers",cascade = { CascadeType.ALL })
     private Set<Post> likedPosts;
 
-    @ManyToMany(mappedBy = "dislikers")
+    @ManyToMany(mappedBy = "dislikers",cascade = { CascadeType.ALL })
     private Set<Post> dislikedPosts;
 
-    @ManyToMany(mappedBy = "commentLikers")
+    @ManyToMany(mappedBy = "commentLikers",cascade = { CascadeType.ALL })
     private Set<Comment> likedComments;
 
-    @ManyToMany(mappedBy = "commentDislikers")
+    @ManyToMany(mappedBy = "commentDislikers",cascade = { CascadeType.ALL })
     private Set<Comment> dislikedComments;
 
 }

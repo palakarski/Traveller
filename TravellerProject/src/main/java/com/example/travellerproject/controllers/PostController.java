@@ -1,8 +1,10 @@
 package com.example.travellerproject.controllers;
 import com.example.travellerproject.model.dto.LikeDislikeMessageDTO;
 import com.example.travellerproject.model.dto.MessageDTO;
+import com.example.travellerproject.model.dto.comment.CommentResponseDTO;
 import com.example.travellerproject.model.dto.post.RequestPostDTO;
 import com.example.travellerproject.model.dto.post.ResponsePostDTO;
+import com.example.travellerproject.model.dto.user.OwnerOfPostOrCommentDTO;
 import com.example.travellerproject.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,6 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    private static final String LOGGED = "logged";
-
     @Autowired
     private PostService postService;
     @Autowired
@@ -24,8 +24,6 @@ public class PostController {
 
     @PostMapping(value = "post/create")
     public ResponseEntity<ResponsePostDTO> createPost(@RequestBody RequestPostDTO requestPostDTO, HttpSession session) {
-//        sessionValidator.isUserLoged(session);
-//        long id = (Long) session.getAttribute(LOGGED);
         long userId = sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(postService.createPost(requestPostDTO, userId));
     }
@@ -42,7 +40,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getById(id));
     }
 
-    @PostMapping(value = "/post/{id}/edit")
+    @PutMapping(value = "/post/{id}/edit")
     public ResponseEntity<ResponsePostDTO> editPost(@RequestBody RequestPostDTO requestPostDTO, @PathVariable long id, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(postService.editPost(requestPostDTO, id, userId));
@@ -61,12 +59,23 @@ public class PostController {
         return postService.unTagUser(userId, id, pId);
     }
 
+    @GetMapping(value = "/post/{pId}/tags")
+    public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(@PathVariable long pId, HttpSession session) {
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getAllTagedUsers(userId, pId);
+    }
+
     @GetMapping(value = "post/search/{username}")
     public List<ResponsePostDTO> findAllPostOfUser(@PathVariable String username, HttpSession session) {
         sessionValidator.isUserLoged(session);
         return postService.findPosts(username);
     }
 
+    @GetMapping(value = "post/comments/{postId}")
+    public List<CommentResponseDTO> showAllCommentsByPost(@PathVariable long postId, HttpSession session) {
+        sessionValidator.isUserLoged(session);
+        return postService.findComments(postId);
+    }
     //return type ?
     @PostMapping(value = "/posts/{id}/like")
     public LikeDislikeMessageDTO likePost(@PathVariable long id, HttpSession session) {
@@ -91,23 +100,29 @@ public class PostController {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.undoDislikePost(id, userId);
     }
+    @GetMapping(value = "/posts/allForeignPosts/")
+    public List<ResponsePostDTO> getAllForeignPosts(HttpSession session) {
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getAllForeignPosts(userId);
+    }
 
     // vsichki postve bez tiq na usera
     @GetMapping(value = "/posts/allForeignPosts/{filterName}")
-    public List<ResponsePostDTO> getAllForeignPosts(@PathVariable String filterName, HttpSession session) {
+    public List<ResponsePostDTO> getAllForeignPostsFiltered(@PathVariable String filterName, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
-        return postService.getAllForeignPosts(userId, filterName);
+        return postService.getAllForeignPostsFiltered(userId, filterName);
     }
-        @GetMapping(value = "/posts/newsfeed")
-        public List<ResponsePostDTO> getNewsfeed (HttpSession session){
-            long userId = sessionValidator.isUserLogedIn(session);
-            return postService.getNewsfeed(userId);
-        }
 
-        @GetMapping(value = "/posts/newsfeed/{filterName}")
-        public List<ResponsePostDTO> getNewsfeedWithFilter (@PathVariable String filterName, HttpSession session){
-            long userId = sessionValidator.isUserLogedIn(session);
-            return postService.getNewsfeedWithFilter(userId, filterName);
-        }
+    @GetMapping(value = "/posts/newsfeed")
+    public List<ResponsePostDTO> getNewsfeed (HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getNewsfeed(userId);
+    }
+
+    @GetMapping(value = "/posts/newsfeed/{filterName}")
+    public List<ResponsePostDTO> getNewsfeedWithFilter (@PathVariable String filterName, HttpSession session){
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getNewsfeedWithFilter(userId, filterName);
+    }
 }
 

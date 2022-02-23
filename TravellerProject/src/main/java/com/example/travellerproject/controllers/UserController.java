@@ -12,8 +12,8 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController {
-    private static final String LOGGED ="logged";
-    private static final String LOGGED_IN = "logged_in";
+
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -56,6 +56,14 @@ public class UserController {
             return new MessageDTO("You have logged out");
 
         }
+
+        @PostMapping(value ="/user/edit")
+        public ResponseEntity<UserWithOutPassDTO> Edit(@RequestBody EditUserDTO editUserDTO,HttpSession session){
+            long userId = sessionValidator.isUserLogedIn(session);
+            return  ResponseEntity.ok(userService.edit(userId,editUserDTO));
+        }
+
+
         @DeleteMapping (value = "/delete")
         public MessageDTO deleteAcc(HttpSession session){
         long id = sessionValidator.isUserLogedIn(session);
@@ -63,21 +71,19 @@ public class UserController {
         return new MessageDTO("Account has been deleted");
         }
         @PutMapping(value = "/changepass")
-        public MessageDTO changePass(HttpSession session, @RequestBody ChangePasswordDTO changePasswordDTO){
+        public MessageDTO changePass(HttpSession session, @RequestBody UserChangePasswordDTO changePasswordDTO){
             long id = sessionValidator.isUserLogedIn(session);
             return userService.changePassword(id,changePasswordDTO);
 
         }
         @PutMapping(value = "/forgotten_password")
-        public MessageDTO forgottenPass(HttpSession session, @RequestBody ForgottenPassDTO forgottenPassDTO){
-            String email = forgottenPassDTO.getEmail();
+        public MessageDTO forgottenPass(HttpSession session, @RequestBody UserForgottenPassDTO forgottenPassDTO){
 
-            if(!session.isNew()&&session.getAttribute(LOGGED)!=null){
-                throw new BadRequestException("You are already logged in.");
-            }
+                sessionValidator.isAlreadyLogged(session);
 
-            return userService.forgottenPassword(session,email);
+                return userService.forgottenPassword(session, forgottenPassDTO);
         }
+
 
         @PostMapping(value = "/user/{id}/follow")
         public MessageDTO follow(@PathVariable long id,HttpSession session){

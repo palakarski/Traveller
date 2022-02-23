@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 public class CommentRequestDTO {
+
     private String text;
-    private LocalDate createdAt;
+
 }

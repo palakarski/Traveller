@@ -40,7 +40,7 @@ public class Validator {
             throw new BadRequestException("Username is mandatory");
         }
         if(username.length()<8){
-            throw new BadRequestException("Username must be atleast 8 symbols");
+            throw new BadRequestException("Username must be atleast 8 symbols and lesser than 20 symbols");
         }
         if(!username.matches("^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")){
                 throw new BadRequestException("Username must be between 8 and 20 characters.Only latin letters and numbers allowed");
@@ -56,8 +56,11 @@ public class Validator {
         if(password == null || password.isBlank()){
             throw new BadRequestException("Password is mandatory");
         }
-        if(!password.matches("^.*(?=.{8,})(?=.*\\d)(?=.*[a-zA-Z])|(?=.{8,})(?=.*\\d)(?=.*[!@#$%^&])|(?=.{8,})(?=.*[a-zA-Z])(?=.*[!@#$%^&]).*$")){
-            throw new BadRequestException("Password must contains at least 8 numbers and 2 charsequences");
+        if(password.length()>30){
+            throw new BadRequestException("Password need to be lesser than 30 characters");
+        }
+        if(!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")){
+            throw new BadRequestException("Password minimum eight characters, at least one letter, one number and one special character:");
             //TODO wrong message
         }
 
@@ -148,12 +151,12 @@ public class Validator {
     }
 
     public void validateImageExtention(String extension) {
-        if(!extension.matches("([^\\\\s]+(\\\\.(?i)(jpe?g|png|gif|bmp))$)")){
+        if(!extension.matches("(jpe?g|png|gif|bmp)")){
             throw new BadRequestException("This file is not image");
         }
     }
     public void validateVideoExtention(String extension) {
-        if(!extension.matches("^.*\\.(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)$”")){
+        if(!extension.matches("(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)")){
             throw new BadRequestException("This file is not video");
 
         }

@@ -68,7 +68,7 @@ public class ExceptionControler extends ResponseEntityExceptionHandler {
         e.printStackTrace();
         return errorDTO;
     }
-    @ExceptionHandler(value = InvalidDefinitionException.class)
+    @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorDTO handleInternal(Exception e){
@@ -78,4 +78,6 @@ public class ExceptionControler extends ResponseEntityExceptionHandler {
         e.printStackTrace();
         return errorDTO;
     }
+
+
 }

@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,23 +61,23 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.ALL })
     @JsonManagedReference
     @JoinTable(
             //rename table usesr --> users_like_posts
-            name = "usesr_like_posts",
+            name = "users_like_posts",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> likers;
+    private Set<User> likers = new HashSet<>();
 
 
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
             name = "users_dislike_posts",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> dislikers;
+    private Set<User> dislikers = new HashSet<>();
 
 
 
@@ -96,6 +97,6 @@ public class Post {
             joinColumns = {@JoinColumn (name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name="user_id")}
     )
-    private List<User> userTagAtPosts ;
+    private List<User> userTagAtPosts = new ArrayList<>();
 
 }
