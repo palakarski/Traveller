@@ -71,7 +71,7 @@ public class UserService {
             return modelMapper.map(user,UserWithOutPassDTO.class);
 
         }
-        
+
         public UserWithOutPassDTO getByUserName(String username){
             User u = userRepository.findByUsername(username);
             if(u!=null){
