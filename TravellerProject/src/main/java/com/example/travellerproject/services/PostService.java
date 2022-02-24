@@ -54,9 +54,10 @@ public class PostService {
         return new ResponsePostDTO(post);
 
     }
-    public MessageDTO deletePost(long id) {
+    public MessageDTO deletePost(long id,long userId) {
 
         Post post = validator.validatePostAndGet(id);
+        validator.validateUserAndPostOwnership(post,userId);
         postRepository.delete(post);
         return new MessageDTO("Post deleted");
 

@@ -145,7 +145,8 @@ public class Validator {
         return u;
     }
     public void validateUserAndPostOwnership(Post post,long userId){
-        if(post.getUser().getId()!=userId){
+        User user = validateUserAndGet(userId);
+        if(post.getUser().getId()!=userId && !user.isAdmin()){
             throw new BadRequestException("You are not owner of this post");
         }
     }

@@ -29,9 +29,7 @@ public class UserRegisterDTO {
     private String password;
     @NotNull
     private String confpassword;
-    @NotNull
-    private boolean isAdmin;
-
+    
     private char gender;
 
 }

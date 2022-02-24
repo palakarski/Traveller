@@ -50,7 +50,7 @@ public class CommentService {
     public MessageDTO deleteComment(long commentId,long userId) {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
-        if(comment.getUser().equals(user)){
+        if(comment.getUser().equals(user) || !user.isAdmin()){
             throw new UnauthorizedException("This comment isn't your,and you can't delete it.");
         }
         commentRepository.delete(comment);
@@ -66,7 +66,7 @@ public class CommentService {
     public CommentResponseDTO editComment(CommentRequestDTO commentRequestDTO,long commentId,long userId) {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
-        if(comment.getUser().equals(user)){
+        if(comment.getUser().equals(user) || !user.isAdmin()){
             throw new UnauthorizedException("You cant edit comment that u didnt post.");
         }
         modelMapper.map(commentRequestDTO,comment);

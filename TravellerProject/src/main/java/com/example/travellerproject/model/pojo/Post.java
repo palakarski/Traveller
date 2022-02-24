@@ -81,12 +81,12 @@ public class Post {
 
 
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post",cascade = { CascadeType.ALL })
     @JsonManagedReference
     private List<Image> images = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post",cascade = { CascadeType.ALL })
     @JsonManagedReference
     private List<Video> videos = new ArrayList<>();
 

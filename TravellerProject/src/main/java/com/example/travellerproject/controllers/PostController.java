@@ -28,10 +28,10 @@ public class PostController {
         return ResponseEntity.ok(postService.createPost(requestPostDTO, userId));
     }
 
-    @DeleteMapping(value = "delete/{id}")
-    public MessageDTO deletePost(@PathVariable long id, HttpSession session) {
-        sessionValidator.isUserLoged(session);
-        return postService.deletePost(id);
+    @DeleteMapping(value = "delete/{postId}")
+    public MessageDTO deletePost(@PathVariable long postId, HttpSession session) {
+        long userId =  sessionValidator.isUserLogedIn(session);
+        return postService.deletePost(postId,userId);
     }
 
     @GetMapping(value = "/post/{id}")
