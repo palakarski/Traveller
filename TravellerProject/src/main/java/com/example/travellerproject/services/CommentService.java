@@ -15,6 +15,7 @@ import com.example.travellerproject.repositories.CommentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -29,7 +30,7 @@ public class CommentService {
     @Autowired
     private Validator validator;
 
-
+    @Transactional
     public CommentResponseDTO create(long userId, CommentRequestDTO commentRequestDTO, long postId) {
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
@@ -45,7 +46,7 @@ public class CommentService {
         return new CommentResponseDTO(comment);
     }
 
-
+    @Transactional
     public MessageDTO deleteComment(long commentId,long userId) {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
@@ -61,6 +62,7 @@ public class CommentService {
         return new CommentResponseDTO(comment);
     }
 
+    @Transactional
     public CommentResponseDTO editComment(CommentRequestDTO commentRequestDTO,long commentId,long userId) {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
@@ -73,7 +75,7 @@ public class CommentService {
         return new CommentResponseDTO(comment);
     }
 
-    //ByIvan
+    @Transactional
     public LikeDislikeMessageDTO likeComment(long commentId, long userId){
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
@@ -88,6 +90,7 @@ public class CommentService {
         return new LikeDislikeMessageDTO("You have liked a comment",comment.getCommentLikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO undoLikeComment(long commentId, long userId){
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
@@ -99,7 +102,7 @@ public class CommentService {
         return new LikeDislikeMessageDTO("You have undid your like ",comment.getCommentLikers().size());
     }
 
-
+    @Transactional
     public LikeDislikeMessageDTO dislikeComment(long commentId, long userId){
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
@@ -114,7 +117,7 @@ public class CommentService {
         return new LikeDislikeMessageDTO("You have disliked a comment",comment.getCommentDislikers().size());
     }
 
-
+    @Transactional
     public LikeDislikeMessageDTO undoDislikeComment(long commentId, long userId){
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);

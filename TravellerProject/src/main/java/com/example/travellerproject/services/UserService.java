@@ -4,10 +4,7 @@ import com.example.travellerproject.exceptions.AuthenticationException;
 import com.example.travellerproject.exceptions.BadRequestException;
 import com.example.travellerproject.exceptions.NotFoundException;
 import com.example.travellerproject.model.dto.MessageDTO;
-import com.example.travellerproject.model.dto.user.UserChangePasswordDTO;
-import com.example.travellerproject.model.dto.user.UserForgottenPassDTO;
-import com.example.travellerproject.model.dto.user.UserRegisterDTO;
-import com.example.travellerproject.model.dto.user.UserWithOutPassDTO;
+import com.example.travellerproject.model.dto.user.*;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -84,6 +83,7 @@ public class UserService {
             userRepository.delete(u);
     }
 
+    @Transactional
     public MessageDTO changePassword(long id, UserChangePasswordDTO changePasswordDTO) {
         User u = validator.validateUserAndGet(id);
         String newpassword = changePasswordDTO.getNewpassword();
@@ -101,6 +101,7 @@ public class UserService {
         return new MessageDTO("Password was changed.");
     }
 
+    @Transactional
     public MessageDTO forgottenPassword(HttpSession session, UserForgottenPassDTO dto) {
 
             validator.validateUserByEmail(dto.getEmail());
@@ -112,6 +113,7 @@ public class UserService {
 
     }
 
+    @Transactional
     public MessageDTO follow(long userId, long subcribedForId) {
         User subcriber = validator.validateUserAndGet(userId);
         User subscribedFor = validator.validateUserAndGet(subcribedForId);
@@ -123,6 +125,7 @@ public class UserService {
         return new MessageDTO("You have subscribe for user with id " + subcribedForId);
     }
 
+    @Transactional
     public MessageDTO unfollow(long userId, long subcribedForId) {
         User subcriber = validator.validateUserAndGet(userId);
         User subscribedFor = validator.validateUserAndGet(subcribedForId);
@@ -172,5 +175,14 @@ public class UserService {
             e.printStackTrace();
         }
         return null;
+    }
+    @Transactional
+    public UserWithOutPassDTO edit(long userId, EditUserDTO editUserDTO) {
+            User u = validator.validateUserAndGet(userId);
+            validator.validEmail(editUserDTO.getEmail());
+            validator.validateFirstnameAndLastName(editUserDTO.getFirstName(),editUserDTO.getLastName());
+            modelMapper.map(editUserDTO,u);
+            userRepository.save(u);
+            return modelMapper.map(u,UserWithOutPassDTO.class);
     }
 }

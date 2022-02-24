@@ -17,6 +17,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -32,9 +34,10 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Transactional
     public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userId) {
         long postCategoryId = requestPostDTO.getPostCategory();
-
         validator.validateTitle(requestPostDTO.getTitle());
         validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
         Post post = modelMapper.map(requestPostDTO, Post.class);
@@ -59,6 +62,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public ResponsePostDTO editPost(RequestPostDTO requestPostDTO, long id,long userId) {
         Post post = validator.validatePostAndGet(id);
         validator.validateUserAndPostOwnership(post,userId);
@@ -69,6 +73,8 @@ public class PostService {
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
     }
+
+    @Transactional
     public LikeDislikeMessageDTO likePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
@@ -83,6 +89,7 @@ public class PostService {
         return new LikeDislikeMessageDTO("You have liked a post",post.getLikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO undoLikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
@@ -95,6 +102,7 @@ public class PostService {
         return new LikeDislikeMessageDTO("You have undid your like  ",post.getLikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO dislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
@@ -109,6 +117,7 @@ public class PostService {
         return new LikeDislikeMessageDTO("You have disliked a post ",post.getDislikers().size());
     }
 
+    @Transactional
     public LikeDislikeMessageDTO undoDislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
         User user = validator.validateUserAndGet(userId);
@@ -120,7 +129,7 @@ public class PostService {
         return new LikeDislikeMessageDTO("You have undid your dislike  ",post.getDislikers().size());
     }
 
-
+    @Transactional
     public MessageDTO tagUser(long userId, long tagUserid, long pId) {
 
         Post post = validator.validatePostAndGet(pId);
@@ -132,6 +141,8 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have tagged " + tagUserid);
     }
+
+    @Transactional
     public MessageDTO unTagUser(long userId, long tagUserid, long pId) {
         Post post = validator.validatePostAndGet(pId);
         User tagedUser = validator.validateUserAndGet(tagUserid);
@@ -145,6 +156,7 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have untagged " + tagUserid);
     }
+
 
     public List<ResponsePostDTO> findPosts(String username) {
         User user = userRepository.findByUsername(username);
@@ -189,7 +201,7 @@ public class PostService {
         return filterPostsCollection(sortedNewsfeed , filterName);
     }
 
-    public List<ResponsePostDTO> getAllForeignPosts(long userId, String filterName){
+    public List<ResponsePostDTO> getAllForeignPostsFiltered(long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
@@ -255,5 +267,21 @@ public class PostService {
             throw new BadRequestException("No comments found for this post");
         }
         return comments;
+    }
+
+    public List<ResponsePostDTO> getAllForeignPosts(long userId) {
+        return getAllForeignPostsUnsorted(userId);
+    }
+
+    public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(long userId, long pId) {
+        Post post = validator.validatePostAndGet(pId);
+        List<OwnerOfPostOrCommentDTO> tagedUsers = new ArrayList<>();
+        if(post.getUserTagAtPosts().isEmpty()){
+            throw new BadRequestException("No tagged users found.");
+        }
+        for (User u : post.getUserTagAtPosts()) {
+            tagedUsers.add(new OwnerOfPostOrCommentDTO(u));
+        }
+        return tagedUsers;
     }
 }

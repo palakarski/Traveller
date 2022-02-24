@@ -151,12 +151,12 @@ public class Validator {
     }
 
     public void validateImageExtention(String extension) {
-        if(!extension.matches("([^\\\\s]+(\\\\.(?i)(jpe?g|png|gif|bmp))$)")){
+        if(!extension.matches("(jpe?g|png|gif|bmp)")){
             throw new BadRequestException("This file is not image");
         }
     }
     public void validateVideoExtention(String extension) {
-        if(!extension.matches("^.*\\.(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)$”")){
+        if(!extension.matches("(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)")){
             throw new BadRequestException("This file is not video");
 
         }

@@ -39,7 +39,7 @@ public class VideoService {
             throw new UnauthorizedException("This post isn't yours.So you cannot add video");
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
-//        validator.validateVideoExtention(extension);
+        validator.validateVideoExtention(extension);
         String name = System.nanoTime()+"."+ extension;
         Files.copy(file.getInputStream(), new File("video" + File.separator + name).toPath());
         Video video = new Video();

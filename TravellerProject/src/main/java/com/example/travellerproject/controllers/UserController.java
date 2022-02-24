@@ -56,6 +56,14 @@ public class UserController {
             return new MessageDTO("You have logged out");
 
         }
+
+        @PostMapping(value ="/user/edit")
+        public ResponseEntity<UserWithOutPassDTO> Edit(@RequestBody EditUserDTO editUserDTO,HttpSession session){
+            long userId = sessionValidator.isUserLogedIn(session);
+            return  ResponseEntity.ok(userService.edit(userId,editUserDTO));
+        }
+
+
         @DeleteMapping (value = "/delete")
         public MessageDTO deleteAcc(HttpSession session){
         long id = sessionValidator.isUserLogedIn(session);
