@@ -21,7 +21,7 @@ public class LocationController {
     private SessionValidator sessionValidator;
 
     @GetMapping(value = "/post/{postId}/location")
-    public JOpenCageComponents showLocation(@PathVariable long postId, HttpServletResponse response, HttpSession session){
+    public JOpenCageComponents showLocation(@PathVariable long postId, HttpSession session){
         sessionValidator.isUserLoged(session);
         Post post =  validator.validatePostAndGet(postId);
         double latitude= Double.parseDouble(post.getLatitude());

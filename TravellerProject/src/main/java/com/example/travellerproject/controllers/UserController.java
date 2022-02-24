@@ -31,7 +31,6 @@ public class UserController {
             return ResponseEntity.ok(userService.getByUserName(username));
         }
 
-
         @PostMapping(value = "/register")
         public ResponseEntity<UserWithOutPassDTO> register(@RequestBody UserRegisterDTO user,HttpSession session){
             sessionValidator.isAlreadyLogged(session);
@@ -39,6 +38,7 @@ public class UserController {
             UserWithOutPassDTO userWithOutPassDTO = modelMapper.map(u,UserWithOutPassDTO.class);
             return  ResponseEntity.ok(userWithOutPassDTO);
         }
+
         @PostMapping(value = "/login")
         public ResponseEntity<UserWithOutPassDTO> login(@RequestBody UserSignInDTO user, HttpSession session){
         String username = user.getUsername();
@@ -46,15 +46,14 @@ public class UserController {
         sessionValidator.isAlreadyLogged(session);
         User u = userService.login(username,password);
         sessionValidator.userLogsIn(session,u.getId());
-
         return  ResponseEntity.ok(new UserWithOutPassDTO(u));
         }
+
         @PostMapping(value ="/logout")
         public MessageDTO logout(HttpSession session){
             sessionValidator.isUserLogedIn(session);
             sessionValidator.userLogsOut(session);
             return new MessageDTO("You have logged out");
-
         }
 
         @PostMapping(value ="/user/edit")
@@ -70,12 +69,13 @@ public class UserController {
         userService.deleteAcc(id);
         return new MessageDTO("Account has been deleted");
         }
+
         @PutMapping(value = "/changepass")
         public MessageDTO changePass(HttpSession session, @RequestBody UserChangePasswordDTO changePasswordDTO){
             long id = sessionValidator.isUserLogedIn(session);
             return userService.changePassword(id,changePasswordDTO);
-
         }
+
         @PutMapping(value = "/forgotten_password")
         public MessageDTO forgottenPass(HttpSession session, @RequestBody UserForgottenPassDTO forgottenPassDTO){
                 sessionValidator.isAlreadyLogged(session);
@@ -90,8 +90,8 @@ public class UserController {
                 throw new BadRequestException("You can't subscribe for your own profile");
             }
             return userService.follow(userId,id);
-
         }
+
         @PostMapping(value = "/user/{id}/unfollow")
         public MessageDTO unfollow(@PathVariable("id") long id,HttpSession session){
             long userId = sessionValidator.isUserLogedIn(session);
@@ -99,7 +99,6 @@ public class UserController {
                 throw new BadRequestException("You can't unsubscribe for your own profile");
             }
             return userService.unfollow(userId,id);
-
         }
 
 
