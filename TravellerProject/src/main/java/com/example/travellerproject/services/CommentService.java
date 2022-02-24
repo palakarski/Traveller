@@ -86,6 +86,7 @@ public class CommentService {
             throw new BadRequestException("You have disliked this comment.Please undo it.");
         }
         comment.getCommentLikers().add(user);
+
         commentRepository.save(comment);
         return new LikeDislikeMessageDTO("You have liked a comment",comment.getCommentLikers().size());
     }

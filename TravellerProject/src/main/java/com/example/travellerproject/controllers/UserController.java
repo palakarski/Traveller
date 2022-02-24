@@ -79,10 +79,11 @@ public class UserController {
         @PutMapping(value = "/forgotten_password")
         public MessageDTO forgottenPass(HttpSession session, @RequestBody UserForgottenPassDTO forgottenPassDTO){
 
-            sessionValidator.isAlreadyLogged(session);
+                sessionValidator.isAlreadyLogged(session);
 
-            return userService.forgottenPassword(session,forgottenPassDTO);
+                return userService.forgottenPassword(session, forgottenPassDTO);
         }
+
 
         @PostMapping(value = "/user/{id}/follow")
         public MessageDTO follow(@PathVariable long id,HttpSession session){

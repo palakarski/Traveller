@@ -9,7 +9,16 @@
       "name": "log4j.logger.org.hibernate.SQL",
       "type": "java.lang.String",
       "description": "Description for log4j.logger.org.hibernate.SQL."
+    },
+    {
+      "name": "mail.senderEmail",
+      "type": "java.lang.String",
+      "description": "Description for mail.senderEmail."
+    },
+    {
+      "name": "mail.auth",
+      "type": "java.lang.String",
+      "description": "Description for mail.auth."
     }
-
   ]
 }
