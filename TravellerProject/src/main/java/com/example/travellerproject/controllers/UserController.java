@@ -78,7 +78,6 @@ public class UserController {
         }
         @PutMapping(value = "/forgotten_password")
         public MessageDTO forgottenPass(HttpSession session, @RequestBody UserForgottenPassDTO forgottenPassDTO){
-
                 sessionValidator.isAlreadyLogged(session);
                 return userService.forgottenPassword(session, forgottenPassDTO);
         }
