@@ -162,14 +162,14 @@ public class PostService {
     public List<ResponsePostDTO> findPosts(String username) {
         User user = userRepository.findByUsername(username);
         if(user==null){
-            throw new NotFoundException("User with this username "+username+" not found");
+            throw new NotFoundException("User with username: "+username+" not found");
         }
         if(user.getPosts().isEmpty()){
             throw  new BadRequestException("This user don't have posts ");
         }
         List<ResponsePostDTO> postsDTO =  new ArrayList<>();
         for (Post e : user.getPosts()) {
-            postsDTO.add(modelMapper.map(e,ResponsePostDTO.class));
+            postsDTO.add(new ResponsePostDTO(e));
         }
         return postsDTO;
     }
@@ -220,9 +220,7 @@ public class PostService {
         List <ResponsePostDTO> unsortedNewsfeed = new ArrayList<>();
         for (User currUser : user.getFollowedUsers()) {
             for (Post post : currUser.getPosts()) {
-                int postLikes = post.getLikers().size();
-                ResponsePostDTO currDto = modelMapper.map(post,ResponsePostDTO.class);
-                currDto.setLikes(postLikes);
+                ResponsePostDTO currDto = new ResponsePostDTO(post);
                 unsortedNewsfeed.add(currDto);
             }
         }
@@ -235,9 +233,7 @@ public class PostService {
        List<Post> allForeignPosts = postRepository.findPostByUserIsNot(u);
        List<ResponsePostDTO> dtos = new ArrayList<>();
        for(Post post : allForeignPosts){
-           int postLikes = post.getLikers().size();
-           ResponsePostDTO currDto = modelMapper.map(post,ResponsePostDTO.class);
-           currDto.setLikes(postLikes);
+           ResponsePostDTO currDto = new ResponsePostDTO(post);
            dtos.add(currDto);
        }
        return dtos;
