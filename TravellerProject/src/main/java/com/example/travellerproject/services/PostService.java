@@ -16,6 +16,9 @@ import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -175,17 +178,16 @@ public class PostService {
     }
 
 
+
     public List<ResponsePostDTO> getNewsfeed(long userId) {
         User user = validator.validateUserAndGet(userId);
         if (user.getFollowedUsers().isEmpty()) {
             throw new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
-        //nz dali taka e pravilno da se sortirat
         List<ResponsePostDTO> newsfeed = new ArrayList<>();
-        for (User currUser : user.getFollowedUsers()) {
-            for (Post post : currUser.getPosts()) {
-                newsfeed.add(modelMapper.map(post, ResponsePostDTO.class));
-            }
+        List<Post> posts = postRepository.getNewsFeed(userId);
+        for(Post p : posts ){
+            newsfeed.add(modelMapper.map(p,ResponsePostDTO.class));
         }
         if (newsfeed.isEmpty()) {
             throw new NotFoundException("There are no post in your newsfeed.");
@@ -194,13 +196,36 @@ public class PostService {
         return newsfeed;
     }
 
+
     public List<ResponsePostDTO> getNewsfeedWithFilter(long userId, String filterName){
+        User user = userRepository.getById(userId);
+        //TODO remove filter validation in validator service
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
-        List <ResponsePostDTO> sortedNewsfeed = getUnsortedNewsfeed(userId);
-        return filterPostsCollection(sortedNewsfeed , filterName);
+        if(user.getFollowedUsers().isEmpty()){
+            throw  new BadRequestException("You must have at least  one subscription for your newsfeed.");
+        }
+        List<Post> posts = null;
+        switch (filterName){
+            case "date" :{
+                posts = postRepository.getNewsFeedSortedByDate(userId);
+            }break;
+            case "category" :{
+                posts = postRepository.getNewsFeedSortedByCategory(userId);
+            }break;
+            case "like" : {
+                posts = postRepository.findPostByUserOrderByLikers(userId);
+            }break;
+        }
+        List<ResponsePostDTO> sortedNewsfeed = new ArrayList<>();
+        for (Post p : posts){
+            sortedNewsfeed.add(modelMapper.map(p,ResponsePostDTO.class));
+        }
+        return sortedNewsfeed;
     }
+
+
 
     public List<ResponsePostDTO> getAllForeignPostsFiltered(long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
@@ -211,26 +236,11 @@ public class PostService {
     }
 
 
-
-    private List<ResponsePostDTO> getUnsortedNewsfeed(long userId){
-        User user = userRepository.getById(userId);
-        if(user.getFollowedUsers().isEmpty()){
-            throw  new BadRequestException("You must have at least  one subscription for your newsfeed.");
-        }
-        List <ResponsePostDTO> unsortedNewsfeed = new ArrayList<>();
-        for (User currUser : user.getFollowedUsers()) {
-            for (Post post : currUser.getPosts()) {
-                ResponsePostDTO currDto = new ResponsePostDTO(post);
-                unsortedNewsfeed.add(currDto);
-            }
-        }
-        return  unsortedNewsfeed;
-    }
     private List<ResponsePostDTO> getAllForeignPostsUnsorted(long userId){
         User u  = userRepository.getById(userId);
         String userName = u.getUsername();
         //findAllByUsernameIsNot - raboti sas string
-       List<Post> allForeignPosts = postRepository.findPostByUserIsNot(u);
+       List<Post> allForeignPosts = postRepository.getAllForeignPost(userId);
        List<ResponsePostDTO> dtos = new ArrayList<>();
        for(Post post : allForeignPosts){
            ResponsePostDTO currDto = new ResponsePostDTO(post);
@@ -267,7 +277,12 @@ public class PostService {
     }
 
     public List<ResponsePostDTO> getAllForeignPosts(long userId) {
-        return getAllForeignPostsUnsorted(userId);
+        List<Post> posts = postRepository.getAllForeignPost(userId);
+        List<ResponsePostDTO> postDTOS = new ArrayList<>();
+        for (Post p : posts){
+            postDTOS.add(modelMapper.map(p,ResponsePostDTO.class));
+        }
+        return postDTOS;
     }
 
     public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(long userId, long pId) {
@@ -280,5 +295,47 @@ public class PostService {
             tagedUsers.add(new OwnerOfPostOrCommentDTO(u));
         }
         return tagedUsers;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public Page<CommentResponseDTO> getAllCommnetsByPost(Pageable page, long postId) {
+        Post post = validator.validatePostAndGet(postId);
+        List<CommentResponseDTO>  comments= new ArrayList<>();
+        for (Comment c: post.getComments()) {
+            comments.add(new CommentResponseDTO(c));
+        }
+        if(comments.isEmpty()){
+            throw new BadRequestException("No comments found for this post");
+        }
+        Page<CommentResponseDTO> mainPage = new PageImpl<>(comments);
+        return mainPage;
+    }
+
+    public Page<ResponsePostDTO> getAllPosts(Pageable pageable, long userId) {
+        User user = validator.validateUserAndGet(userId);
+        Page<Post> postPage = postRepository.findPostsByUserIsNot(pageable,user);
+        Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
+        return responsePostDTOS;
     }
 }
