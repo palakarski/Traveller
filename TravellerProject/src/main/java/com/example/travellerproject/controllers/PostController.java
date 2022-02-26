@@ -7,6 +7,8 @@ import com.example.travellerproject.model.dto.post.ResponsePostDTO;
 import com.example.travellerproject.model.dto.user.OwnerOfPostOrCommentDTO;
 import com.example.travellerproject.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
@@ -76,6 +78,12 @@ public class PostController {
         sessionValidator.isUserLoged(session);
         return postService.findComments(postId);
     }
+
+    @GetMapping(value = "/post/{postId}/comments")
+    public Page<CommentResponseDTO> getAllcomments(Pageable page,@PathVariable long postId,HttpSession session){
+        sessionValidator.isUserLoged(session);
+        return postService.getAllCommnetsByPost(page,postId);
+    }
     //return type ?
     @PostMapping(value = "/posts/{id}/like")
     public LikeDislikeMessageDTO likePost(@PathVariable long id, HttpSession session) {
@@ -104,6 +112,12 @@ public class PostController {
     public List<ResponsePostDTO> getAllForeignPosts(HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.getAllForeignPosts(userId);
+    }
+    //NEW
+    @GetMapping(value = "/posts/allPosts/")
+    public Page<ResponsePostDTO> getAllPosts(Pageable pageable,HttpSession session) {
+        long userId = sessionValidator.isUserLogedIn(session);
+        return postService.getAllPosts(pageable,userId);
     }
 
     // vsichki postve bez tiq na usera

@@ -16,11 +16,15 @@ import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -280,5 +284,25 @@ public class PostService {
             tagedUsers.add(new OwnerOfPostOrCommentDTO(u));
         }
         return tagedUsers;
+    }
+
+    public Page<CommentResponseDTO> getAllCommnetsByPost(Pageable page, long postId) {
+        Post post = validator.validatePostAndGet(postId);
+        List<CommentResponseDTO>  comments= new ArrayList<>();
+        for (Comment c: post.getComments()) {
+            comments.add(new CommentResponseDTO(c));
+        }
+        if(comments.isEmpty()){
+            throw new BadRequestException("No comments found for this post");
+        }
+        Page<CommentResponseDTO> mainPage = new PageImpl<>(comments);
+        return mainPage;
+    }
+
+    public Page<ResponsePostDTO> getAllPosts(Pageable pageable, long userId) {
+        User user = validator.validateUserAndGet(userId);
+        Page<Post> postPage = postRepository.findPostsByUserIsNot(pageable,user);
+        Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
+        return responsePostDTOS;
     }
 }
