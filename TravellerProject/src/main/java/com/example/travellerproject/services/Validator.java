@@ -99,7 +99,7 @@ public class Validator {
             throw new UnauthorizedException("You are either too young or too old");
         }
     }
-    public void validateLonitudeAndLatitude(String longitude,String latitude){
+    public void validateLongtitudeAndLatitude(String longitude, String latitude){
         if(longitude.isBlank()||latitude.isBlank()){
             throw new BadRequestException("Coordinates can not be empty");
         }
@@ -159,7 +159,6 @@ public class Validator {
     public void validateVideoExtention(String extension) {
         if(!extension.matches("(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)")){
             throw new BadRequestException("This file is not a video");
-
         }
     }
 }

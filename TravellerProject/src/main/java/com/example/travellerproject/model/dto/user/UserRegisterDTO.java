@@ -32,4 +32,6 @@ public class UserRegisterDTO {
     
     private char gender;
 
+    private boolean isAdmin;
+
 }

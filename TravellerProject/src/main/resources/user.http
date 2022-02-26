@@ -144,19 +144,19 @@ Content-Type: application/json
   "admin":true
 }
 ### //Unvalid Registration
-POST http://localhost:8080/register
+POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"GolqmataNishka1",
+  "username":"GolemiqAdmin4",
   "birthDate":"1993-02-22",
-  "email":"GolqmataNishka1@test",
+  "email":"GolqmataNishka5@test",
   "password":"123456789@A",
   "confpassword":"123456789@A",
   "createdAt":"1993-02-22T00:00:00",
-  "admin":true
+  "admin": true
 }
 ###
 
@@ -174,8 +174,8 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username":"GolqmataNishka1",
-  "password":"ir1appZc1!aA"
+  "username":"GolemiqAdmin4",
+  "password":"123456789@A"
 }
 
 ###
@@ -221,4 +221,11 @@ POST http://localhost:8080/user/4/follow
 
 ###
 POST http://localhost:8080/user/3/unfollow
+###
+POST http://localhost:8080/users/create_category
+Content-Type: application/json
 
+{
+  "categoryType": "ëbahti postata"
+}
+###

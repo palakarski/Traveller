@@ -23,7 +23,7 @@ public class UserController {
 
 
 
-        @PostMapping(value = "/register")
+        @PostMapping(value = "/users/register")
         public ResponseEntity<UserWithOutPassDTO> register(@RequestBody UserRegisterDTO user,HttpSession session){
             sessionValidator.isAlreadyLogged(session);
             User u = userService.register(user);
@@ -47,7 +47,7 @@ public class UserController {
         }
 
         @PostMapping(value ="/users/edit")
-        public ResponseEntity<UserWithOutPassDTO> Edit(@RequestBody EditUserDTO editUserDTO,HttpSession session){
+        public ResponseEntity<UserWithOutPassDTO> edit(@RequestBody EditUserDTO editUserDTO, HttpSession session){
             long userId = sessionValidator.isUserLoggedIn(session);
             return  ResponseEntity.ok(userService.edit(userId,editUserDTO));
         }
@@ -76,7 +76,6 @@ public class UserController {
             return ResponseEntity.ok(userService.getById(id));
         }
 
-
         @GetMapping(value = "/users/find/{username}")
         public ResponseEntity<UserWithOutPassDTO> getByusername(@PathVariable String username){
             return ResponseEntity.ok(userService.getByUserName(username));
@@ -99,4 +98,11 @@ public class UserController {
             }
             return userService.unfollow(userId,id);
         }
+
+    @PostMapping(value = "/users/create_category")
+    public MessageDTO register(@RequestBody UserCreatesCategoryDTO categoryDTO,HttpSession session){
+        long userId = sessionValidator.isUserLoggedIn(session);
+        return userService.createCategory(userId,categoryDTO);
+    }
+
 }

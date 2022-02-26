@@ -44,7 +44,7 @@ public class PostService {
     public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userId) {
         long postCategoryId = requestPostDTO.getPostCategory();
         validator.validateTitle(requestPostDTO.getTitle());
-        validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
+        validator.validateLongtitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
         Post post = modelMapper.map(requestPostDTO, Post.class);
         post.setUser(validator.validateUserAndGet(userId));
         post.setPostCategory(validator.validateCategory(postCategoryId));
@@ -74,7 +74,7 @@ public class PostService {
         Post post = validator.validatePostAndGet(id);
         validator.validateUserAndPostOwnership(post,userId);
         validator.validateTitle(requestPostDTO.getTitle());
-        validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
+        validator.validateLongtitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
         validator.validateCategory(requestPostDTO.getPostCategory());
         modelMapper.map(requestPostDTO,post);
         postRepository.save(post);

@@ -22,7 +22,7 @@ public class EmailService{
 //    @Value("${mail.senderPassword}")
 //    private String senderPassword;
     private static final String EMAIL_SENDER ="stefeanpvivan1998@gmail.com";
-    private static final String PASSWORD = "JAVA!&java17";
+    private static final String PASSWORD = "xxxxx";
 
 
 
