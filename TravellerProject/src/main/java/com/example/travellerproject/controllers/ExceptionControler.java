@@ -31,7 +31,7 @@ public class ExceptionControler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public ErrorDTO handleUnautorized(Exception e){
+    public ErrorDTO handleUnauthorized(Exception e){
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setMessage(e.getMessage());
         errorDTO.setStatus(HttpStatus.UNAUTHORIZED.value());

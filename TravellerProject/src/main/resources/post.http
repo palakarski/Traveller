@@ -45,6 +45,8 @@ GET http://localhost:8080/posts/newsfeed/like
 ###
 GET http://localhost:8080/posts/allForeignPosts
 ###
+GET http://localhost:8080/posts/allForeignPosts/category
+###
 GET http://localhost:8080/posts/allForeignPosts/date
 ###
 GET http://localhost:8080/posts/allForeignPosts/like

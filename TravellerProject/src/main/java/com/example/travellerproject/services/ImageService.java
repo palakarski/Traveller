@@ -7,7 +7,7 @@ import com.example.travellerproject.model.dto.media.ImageDTO;
 import com.example.travellerproject.model.pojo.Image;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.User;
-import com.example.travellerproject.repositories.ImageRepositoty;
+import com.example.travellerproject.repositories.ImageRepositorty;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -27,18 +27,18 @@ public class ImageService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private ImageRepositoty imageRepositoty;
+    private ImageRepositorty imageRepositoty;
     @Autowired
     private Validator validator;
 
 
     @SneakyThrows
     public ResponseEntity<ImageDTO> uploadImg(MultipartFile file, HttpSession session, long postId) {
-        long userId = sessionValidator.isUserLogedIn(session);
+        long userId = sessionValidator.isUserLoggedIn(session);
         User user = validator.validateUserAndGet(userId);
         Post post = validator.validatePostAndGet(postId);
         if(user.getId()!=post.getUser().getId()){
-            throw new UnauthorizedException("This post isn't yours.So you cannot add images");
+            throw new UnauthorizedException("This post isn't yours. You cannot add images");
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
         validator.validateImageExtention(extension);
@@ -50,7 +50,7 @@ public class ImageService {
         if(post.getImages().size()<3){
             post.getImages().add(image);
         }else{
-            throw new BadRequestException("Sorry post cannot have more then 3 photos");
+            throw new BadRequestException("Sorry a post can have only 3 photos");
         }
         imageRepositoty.save(image);
 

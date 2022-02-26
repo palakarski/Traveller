@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import javax.servlet.http.HttpServletResponse;
+
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -22,7 +22,7 @@ public class LocationController {
 
     @GetMapping(value = "/post/{postId}/location")
     public JOpenCageComponents showLocation(@PathVariable long postId, HttpSession session){
-        sessionValidator.isUserLoged(session);
+        sessionValidator.isUserLogged(session);
         Post post =  validator.validatePostAndGet(postId);
         double latitude= Double.parseDouble(post.getLatitude());
         double longitude= Double.parseDouble(post.getLongitude());

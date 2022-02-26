@@ -14,14 +14,14 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     List<Post> findPostByUserIsNot(User user);
 
-    @Query(value = "select p.* from posts as p " +
+    @Query(value = "select * from posts as p " +
             "join subscribers as s on p.owner_id = s.subscribed_for_user_id " +
             "join users as u on u.id = s.subscriber_id " +
             "where u.id =?1",
             nativeQuery = true)
     Page<Post> getNewsFeed(Pageable pageable,long userId);
 
-    @Query(value = "select p.* from posts as p " +
+    @Query(value = "select * from posts as p " +
             "join subscribers as s on p.owner_id = s.subscribed_for_user_id " +
             "join users as u on u.id = s.subscriber_id " +
             "where u.id =?1 "+
@@ -30,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     Page<Post> getNewsFeedSortedByDate(Pageable pageable,long userId);
 
 
-    @Query(value = "select p.* from posts as p " +
+    @Query(value = "select * from posts as p " +
             "join subscribers as s on p.owner_id = s.subscribed_for_user_id " +
             "join users as u on u.id = s.subscriber_id " +
             "where u.id =?1 "+
@@ -38,7 +38,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
             nativeQuery = true)
     Page<Post> getNewsFeedSortedByCategory(Pageable pageable,long userId);
 
-    @Query(value = "select p.*, count(l.post_id) as likes from posts as p " +
+    @Query(value = "select *, count(l.post_id) as likes from posts as p " +
             "join subscribers as s on p.owner_id = s.subscribed_for_user_id " +
             "join users as u on u.id = s.subscriber_id " +
             "left join users_like_posts as l on p.id = l.post_id " +
@@ -46,13 +46,45 @@ public interface PostRepository extends JpaRepository<Post,Long> {
             "group by p.id "+
             "order by likes desc",
             nativeQuery = true)
-    Page<Post> findPostByUserOrderByLikers(Pageable pageable,long userId);
+    Page<Post> getNewsFeedSortedByLikes(Pageable pageable, long userId);
 
-    @Query(value = "select p.* from posts as p " +
+
+
+
+
+
+   //todo add pagination
+    @Query(value = "select * from posts as p " +
             "join users as u on u.id = p.owner_id "+
             "where not p.owner_id=?1 ",
             nativeQuery = true)
-    List<Post> getAllForeignPost(long userId);
+    Page<Post> getForeignPost(Pageable pageable,long userId);
+
+    ////TODO add pageination to those metodo:
+    @Query(value = "select * from posts as p " +
+            "join users as u on u.id = p.owner_id " +
+            "where not( p.owner_id=?1) " +
+            "order by p.category_id",
+            nativeQuery = true)
+    Page<Post> getAllForeignPostByCategory(Pageable pageable,long userId);
+
+    ////TODO add pageination to those metodo:
+    @Query(value = "select * from posts as p " +
+            "join users as u on u.id = p.owner_id " +
+            "where not( p.owner_id=?1) " +
+            "order by p.created_at",
+            nativeQuery = true)
+    Page<Post> getAllForeignPostByDate(Pageable pageable,long userId);
+    ////TODO add pageination to those metodo:
+    @Query(value = "select *, count(l.post_id) as likes from posts as p " +
+            "join users as u on u.id = p.owner_id " +
+            "left join users_like_posts as l on p.id = l.post_id " +
+            "where not p.owner_id = 2 " +
+            "group by p.id " +
+            "order by likes desc",
+            nativeQuery = true)
+    Page<Post> getAllForeignPostByLikes(Pageable pageable,long userId);
+
 
     Page<Post> findPostsByUserIsNot(Pageable pageable, User user);
 }
