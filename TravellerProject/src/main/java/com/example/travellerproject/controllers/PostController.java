@@ -30,7 +30,7 @@ public class PostController {
         return ResponseEntity.ok(postService.createPost(requestPostDTO, userId));
     }
 
-    @DeleteMapping(value = "delete/{postId}")
+    @DeleteMapping(value = "/posts/delete/{postId}")
     public MessageDTO deletePost(@PathVariable long postId, HttpSession session) {
         long userId =  sessionValidator.isUserLoggedIn(session);
         return postService.deletePost(postId,userId);
@@ -67,22 +67,18 @@ public class PostController {
         return postService.getAllTaggedUsers(userId, pId);
     }
 
+
     @GetMapping(value = "posts/search/{username}")
     public List<ResponsePostDTO> findAllPostOfUser(@PathVariable String username, HttpSession session) {
         sessionValidator.isUserLogged(session);
         return postService.findPostsByUsername(username);
     }
 
-//    @GetMapping(value = "post/comments/{postId}")
-//    public List<CommentResponseDTO> showAllCommentsByPost(@PathVariable long postId, HttpSession session) {
-//        sessionValidator.isUserLoged(session);
-//        return postService.findCommentsByPosts(postId);
-//    }
-    //TODO
     @GetMapping(value = "/posts/{postId}/comments")
     public Page<CommentResponseDTO> getAllComments(Pageable page, @PathVariable long postId, HttpSession session){
         sessionValidator.isUserLogged(session);
         return postService.getAllCommentsByPost(page,postId);
+
     }
 
     @PostMapping(value = "/posts/{id}/like")
@@ -109,23 +105,16 @@ public class PostController {
         return postService.undoDislikePost(id, userId);
     }
 
-//    @GetMapping(value = "/posts/allForeignPosts")
-//    public List<ResponsePostDTO> getAllForeignPosts(HttpSession session) {
-//        long userId = sessionValidator.isUserLogedIn(session);
-//        return postService.getAllForeignPosts(userId);
-//    }
-    //NEW todo add pagination
     @GetMapping(value = "/posts/allForeignPosts")
-    public List<ResponsePostDTO> getForeignPosts(HttpSession session) {
+    public Page<ResponsePostDTO> getForeignPosts(Pageable page,HttpSession session) {
         long userId = sessionValidator.isUserLoggedIn(session);
-        return postService.getForeignPosts(userId);
+        return postService.getForeignPosts(page,userId);
     }
 
-    ////TODO add pageination to those metodo:
     @GetMapping(value = "/posts/allForeignPosts/{filterName}")
-    public List<ResponsePostDTO> getForeignPostsFiltered(@PathVariable String filterName, HttpSession session) {
+    public Page<ResponsePostDTO> getForeignPostsFiltered(Pageable page,@PathVariable String filterName, HttpSession session) {
         long userId = sessionValidator.isUserLoggedIn(session);
-        return postService.getForeignPostsFiltered(userId, filterName);
+        return postService.getForeignPostsFiltered(page,userId, filterName);
     }
 
     @GetMapping(value = "/posts/newsfeed")

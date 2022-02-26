@@ -22,6 +22,7 @@ public class ImageController {
     public ResponseEntity<ImageDTO> uploadImg(@RequestParam(name = "file") MultipartFile file, @PathVariable long id, HttpSession session){
         return imageService.uploadImg(file,session,id);
     }
+
     @SneakyThrows
     @GetMapping(value = "/images/{filename}")
     public void downloadById(@PathVariable String filename, HttpServletResponse response){

@@ -52,12 +52,14 @@ public class PostService {
         postRepository.save(post);
         return new ResponsePostDTO(post);
     }
+    
     public ResponsePostDTO getById(long id) {
 
         Post post = validator.validatePostAndGet(id);
         return new ResponsePostDTO(post);
 
     }
+    
     public MessageDTO deletePost(long id,long userId) {
 
         Post post = validator.validatePostAndGet(id);
@@ -66,6 +68,7 @@ public class PostService {
         return new MessageDTO("Post deleted");
 
     }
+    
     @Transactional
     public ResponsePostDTO editPost(RequestPostDTO requestPostDTO, long id,long userId) {
         Post post = validator.validatePostAndGet(id);
@@ -77,6 +80,7 @@ public class PostService {
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
     }
+    
     @Transactional
     public LikeDislikeMessageDTO likePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -91,6 +95,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have liked a post",post.getLikers().size());
     }
+    
     @Transactional
     public LikeDislikeMessageDTO undoLikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -103,6 +108,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have undid your like  ",post.getLikers().size());
     }
+    
     @Transactional
     public LikeDislikeMessageDTO dislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -117,6 +123,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have disliked a post ",post.getDislikers().size());
     }
+    
     @Transactional
     public LikeDislikeMessageDTO undoDislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -128,6 +135,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have undid your dislike  ",post.getDislikers().size());
     }
+    
     @Transactional
     public MessageDTO tagUser(long userId, long tagUserid, long pId) {
 
@@ -140,6 +148,7 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have tagged " + tagUserid);
     }
+    
     @Transactional
     public MessageDTO unTagUser(long userId, long tagUserid, long pId) {
         Post post = validator.validatePostAndGet(pId);
@@ -154,6 +163,7 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have untagged " + tagUserid);
     }
+
     public List<OwnerOfPostOrCommentDTO> getAllTaggedUsers(long userId, long pId) {
         Post post = validator.validatePostAndGet(pId);
         List<OwnerOfPostOrCommentDTO> taggedUsers = new ArrayList<>();
@@ -165,6 +175,7 @@ public class PostService {
         }
         return taggedUsers;
     }
+   
     public List<ResponsePostDTO> findPostsByUsername(String username) {
         User user = userRepository.findByUsername(username);
         if(user==null){
@@ -179,9 +190,6 @@ public class PostService {
         }
         return postsDTO;
     }
-
-
-
 
 
     public Page<ResponsePostDTO> getNewsfeed(Pageable page, long userId) {
@@ -210,20 +218,15 @@ public class PostService {
         }
         Page<Post> posts = null;
         switch (filterName){
-            case "date" :{
-                posts = postRepository.getNewsFeedSortedByDate(pageable,userId);
-            }break;
-            case "category" :{
-                posts = postRepository.getNewsFeedSortedByCategory(pageable,userId);
-            }break;
-            case "like" : {
-                posts = postRepository.findPostByUserOrderByLikes(pageable,userId);
-            }break;
+            case "date" -> posts = postRepository.getNewsFeedSortedByDate(pageable,userId);
+            case "category" -> posts = postRepository.getNewsFeedSortedByCategory(pageable,userId);
+            case "like" -> posts = postRepository.getNewsFeedSortedByLikes(pageable,userId);
         }
         Page<ResponsePostDTO> sortedNewsfeed = posts.map(ResponsePostDTO::new);
         return sortedNewsfeed;
     }
 
+<<<<<<< HEAD
 
 
 
@@ -238,35 +241,26 @@ public class PostService {
 
     ////TODO add pageination to those metodo:
     public List<ResponsePostDTO> getForeignPosts(long userId) {
+=======
+    public Page<ResponsePostDTO> getForeignPosts(Pageable page,long userId) {
+>>>>>>> 229b4b87abc1b0b32caddfd0fe2f90ca1f8f4923
         User user = validator.validateUserAndGet(userId);
-        List<Post> postPage = postRepository.getForeignPost(userId);
-        List<ResponsePostDTO> postDTOS = new ArrayList<>();
-        for (Post p : postPage){
-            postDTOS.add(modelMapper.map(p,ResponsePostDTO.class));
-        }
+        Page<Post> postPage = postRepository.getForeignPost(page,userId);
+        Page<ResponsePostDTO> postDTOS = postPage.map(ResponsePostDTO::new);
         return postDTOS;
     }
-    ////TODO add pageination to those metodo:
-    public List<ResponsePostDTO> getForeignPostsFiltered(long userId, String filterName){
+
+    public Page<ResponsePostDTO> getForeignPostsFiltered(Pageable page,long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
-        List <ResponsePostDTO> postDTOSFiltered = new ArrayList<>();
-        List<Post> posts = null;
+        Page<Post> posts = null;
         switch (filterName){
-            case "date" :{
-                posts = postRepository.getAllForeignPostByDate(userId);
-            }break;
-            case "category" :{
-                posts = postRepository.getAllForeignPostByCategory(userId);
-            }break;
-            case "like" : {
-                posts = postRepository.getAllForeignPostByLikes(userId);
-            }break;
+            case "date" -> posts = postRepository.getAllForeignPostByDate(page,userId);
+            case "category" ->posts = postRepository.getAllForeignPostByCategory(page,userId);
+            case "like"->posts = postRepository.getAllForeignPostByLikes(page,userId);
         }
-        for (Post p : posts){
-            postDTOSFiltered.add(modelMapper.map(p,ResponsePostDTO.class));
-        }
+        Page<ResponsePostDTO>postDTOSFiltered= posts.map(ResponsePostDTO::new);
         return postDTOSFiltered;
     }
 
