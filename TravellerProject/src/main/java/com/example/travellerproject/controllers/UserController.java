@@ -71,8 +71,6 @@ public class UserController {
             return userService.forgottenPassword(forgottenPassDTO);
         }
 
-<<<<<<< HEAD
-=======
         @GetMapping(value = "/users/{id}")
         public ResponseEntity<UserWithOutPassDTO> getById(@PathVariable long id){
             return ResponseEntity.ok(userService.getById(id));
@@ -84,8 +82,6 @@ public class UserController {
             return ResponseEntity.ok(userService.getByUserName(username));
         }
 
-
->>>>>>> 229b4b87abc1b0b32caddfd0fe2f90ca1f8f4923
         @PostMapping(value = "/users/{id}/follow")
         public MessageDTO follow(@PathVariable long id,HttpSession session){
             long userId = sessionValidator.isUserLoggedIn(session);

@@ -225,25 +225,9 @@ public class PostService {
         Page<ResponsePostDTO> sortedNewsfeed = posts.map(ResponsePostDTO::new);
         return sortedNewsfeed;
     }
-
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-
     ////TODO add pageination to those metodo:
-    public List<ResponsePostDTO> getForeignPosts(long userId) {
-=======
+
     public Page<ResponsePostDTO> getForeignPosts(Pageable page,long userId) {
->>>>>>> 229b4b87abc1b0b32caddfd0fe2f90ca1f8f4923
         User user = validator.validateUserAndGet(userId);
         Page<Post> postPage = postRepository.getForeignPost(page,userId);
         Page<ResponsePostDTO> postDTOS = postPage.map(ResponsePostDTO::new);
