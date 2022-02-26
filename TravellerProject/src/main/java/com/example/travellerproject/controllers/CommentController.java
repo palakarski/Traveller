@@ -19,23 +19,23 @@ public class CommentController {
     private SessionValidator sessionValidator;
 
 
-    @PostMapping(value = "/comment/create/post/{id}")
+    @PostMapping(value = "/comments/create/post/{id}")
     public ResponseEntity<CommentResponseDTO> create(@RequestBody CommentRequestDTO commentRequestDTO, HttpSession session, @PathVariable long id){
     long userId = sessionValidator.isUserLogedIn(session);
     return ResponseEntity.ok(commentService.create(userId,commentRequestDTO,id));
     }
 
-    @DeleteMapping(value = "comments/delete/{id}")
+    @DeleteMapping(value = "/comments/delete/{id}")
     public MessageDTO deleteComment(@PathVariable long id, HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
         return commentService.deleteComment(id,userId);
     }
-    @GetMapping (value = "/comment/{id}")
+    @GetMapping (value = "/comments/{id}")
     public ResponseEntity<CommentResponseDTO> getCommentById(@PathVariable long id, HttpSession session){
         sessionValidator.isUserLoged(session);
         return ResponseEntity.ok(commentService.getById(id));
     }
-    @PutMapping(value = "/comment/edit/{id}")
+    @PutMapping(value = "/comments/edit/{id}")
     public ResponseEntity<CommentResponseDTO> editComment(@RequestBody CommentRequestDTO commentRequestDTO,@PathVariable long id, HttpSession session){
         long userId=sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(commentService.editComment(commentRequestDTO,id,userId));

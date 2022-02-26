@@ -24,50 +24,50 @@ public class PostController {
     private SessionValidator sessionValidator;
 
 
-    @PostMapping(value = "post/create")
+    @PostMapping(value = "/posts/create")
     public ResponseEntity<ResponsePostDTO> createPost(@RequestBody RequestPostDTO requestPostDTO, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(postService.createPost(requestPostDTO, userId));
     }
 
-    @DeleteMapping(value = "delete/{postId}")
+    @DeleteMapping(value = "/posts/delete/{postId}")
     public MessageDTO deletePost(@PathVariable long postId, HttpSession session) {
         long userId =  sessionValidator.isUserLogedIn(session);
         return postService.deletePost(postId,userId);
     }
 
-    @GetMapping(value = "/post/{id}")
+    @GetMapping(value = "/posts/{id}")
     public ResponseEntity<ResponsePostDTO> getPostById(@PathVariable long id, HttpSession session) {
         sessionValidator.isUserLoged(session);
         return ResponseEntity.ok(postService.getById(id));
     }
 
-    @PutMapping(value = "/post/{id}/edit")
+    @PutMapping(value = "/posts/{id}/edit")
     public ResponseEntity<ResponsePostDTO> editPost(@RequestBody RequestPostDTO requestPostDTO, @PathVariable long id, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return ResponseEntity.ok(postService.editPost(requestPostDTO, id, userId));
     }
 
 
-    @PostMapping(value = "/post/{pId}/tag/{tagedUId}")
+    @PostMapping(value = "/posts/{pId}/tag/{tagedUId}")
     public MessageDTO tagUser(@PathVariable long pId, @PathVariable long tagedUId, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.tagUser(userId, tagedUId, pId);
     }
 
-    @PostMapping(value = "/post/{pId}/untag/{id}")
+    @PostMapping(value = "/posts/{pId}/untag/{id}")
     public MessageDTO unTagUser(@PathVariable long pId, @PathVariable long id, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.unTagUser(userId, id, pId);
     }
 
-    @GetMapping(value = "/post/{pId}/tags")
+    @GetMapping(value = "/posts/{pId}/tags")
     public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(@PathVariable long pId, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.getAllTagedUsers(userId, pId);
     }
 
-    @GetMapping(value = "post/search/{username}")
+    @GetMapping(value = "/posts/search/{username}")
     public List<ResponsePostDTO> findAllPostOfUser(@PathVariable String username, HttpSession session) {
         sessionValidator.isUserLoged(session);
         return postService.findPostsByUsername(username);
@@ -79,7 +79,7 @@ public class PostController {
 //        return postService.findCommentsByPosts(postId);
 //    }
     //TODO
-    @GetMapping(value = "/post/{postId}/comments")
+    @GetMapping(value = "/posts/{postId}/comments")
     public Page<CommentResponseDTO> getAllcomments(Pageable page,@PathVariable long postId,HttpSession session){
         sessionValidator.isUserLoged(session);
         return postService.getAllCommnetsByPost(page,postId);

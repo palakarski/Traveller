@@ -54,12 +54,14 @@ public class PostService {
         postRepository.save(post);
         return new ResponsePostDTO(post);
     }
+    
     public ResponsePostDTO getById(long id) {
 
         Post post = validator.validatePostAndGet(id);
         return new ResponsePostDTO(post);
 
     }
+    
     public MessageDTO deletePost(long id,long userId) {
 
         Post post = validator.validatePostAndGet(id);
@@ -68,6 +70,7 @@ public class PostService {
         return new MessageDTO("Post deleted");
 
     }
+    
     @Transactional
     public ResponsePostDTO editPost(RequestPostDTO requestPostDTO, long id,long userId) {
         Post post = validator.validatePostAndGet(id);
@@ -79,6 +82,7 @@ public class PostService {
         postRepository.save(post);
         return modelMapper.map(post,ResponsePostDTO.class);
     }
+    
     @Transactional
     public LikeDislikeMessageDTO likePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -93,6 +97,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have liked a post",post.getLikers().size());
     }
+    
     @Transactional
     public LikeDislikeMessageDTO undoLikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -105,6 +110,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have undid your like  ",post.getLikers().size());
     }
+    
     @Transactional
     public LikeDislikeMessageDTO dislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -119,6 +125,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have disliked a post ",post.getDislikers().size());
     }
+    
     @Transactional
     public LikeDislikeMessageDTO undoDislikePost(long postId, long userId){
         Post post = validator.validatePostAndGet(postId);
@@ -130,6 +137,7 @@ public class PostService {
         postRepository.save(post);
         return new LikeDislikeMessageDTO("You have undid your dislike  ",post.getDislikers().size());
     }
+    
     @Transactional
     public MessageDTO tagUser(long userId, long tagUserid, long pId) {
 
@@ -142,6 +150,7 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have tagged " + tagUserid);
     }
+    
     @Transactional
     public MessageDTO unTagUser(long userId, long tagUserid, long pId) {
         Post post = validator.validatePostAndGet(pId);
@@ -156,6 +165,7 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have untagged " + tagUserid);
     }
+   
     public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(long userId, long pId) {
         Post post = validator.validatePostAndGet(pId);
         List<OwnerOfPostOrCommentDTO> tagedUsers = new ArrayList<>();
@@ -167,6 +177,7 @@ public class PostService {
         }
         return tagedUsers;
     }
+   
     public List<ResponsePostDTO> findPostsByUsername(String username) {
         User user = userRepository.findByUsername(username);
         if(user==null){
@@ -181,8 +192,6 @@ public class PostService {
         }
         return postsDTO;
     }
-
-
 
     public Page<ResponsePostDTO> getNewsfeed(Pageable page, long userId) {
         User user = validator.validateUserAndGet(userId);

@@ -17,13 +17,13 @@ public class VideoController {
     @Autowired
     private VideoService videoService;
 
-    @PostMapping(value = "/video/upload/post/{id}")
+    @PostMapping(value = "/videos/upload/post/{id}")
     public ResponseEntity<VideoDTO> uploadVideo(@RequestParam(name = "file") MultipartFile file, @PathVariable long id, HttpSession session){
         return videoService.uploadImg(file,session,id);
     }
 
     @SneakyThrows
-    @GetMapping(value = "/video/{filename}")
+    @GetMapping(value = "/videos/{filename}")
     public void downloadById(@PathVariable String filename, HttpServletResponse response){
     File file = new File("video"+File.separator+filename);
     if(!file.exists()){
