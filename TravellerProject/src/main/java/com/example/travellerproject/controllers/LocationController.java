@@ -7,6 +7,8 @@ import com.example.travellerproject.exceptions.NotFoundException;
 import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.services.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 
 @RestController
+@PropertySource(value={"classpath:application.properties"})
 public class LocationController {
+
+    @Value("${open.cage.apikey}")
+    String appKey;
     @Autowired
     private Validator validator;
     @Autowired
@@ -26,7 +32,7 @@ public class LocationController {
         Post post =  validator.validatePostAndGet(postId);
         double latitude= Double.parseDouble(post.getLatitude());
         double longitude= Double.parseDouble(post.getLongitude());
-        JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder("888c26957bef430fa93e1acfea8cda64");
+        JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(appKey);
         JOpenCageReverseRequest request = new JOpenCageReverseRequest(latitude, longitude);
         request.setNoAnnotations(true);
         JOpenCageResponse responseJ = jOpenCageGeocoder.reverse(request);

@@ -19,6 +19,11 @@
       "name": "mail.auth",
       "type": "java.lang.String",
       "description": "Description for mail.auth."
+    },
+    {
+      "name": "open.cage.apikey",
+      "type": "java.lang.String",
+      "description": "Description for open.cage.apikey."
     }
   ]
 }

@@ -33,10 +33,10 @@ public class UserController {
 
         @PostMapping(value = "/users/login")
         public ResponseEntity<UserWithOutPassDTO> login(@RequestBody UserSignInDTO user, HttpSession session){
-        sessionValidator.isAlreadyLogged(session);
-        User u = userService.login(user.getUsername(),user.getPassword());
-        sessionValidator.userLogsIn(session,u.getId());
-        return  ResponseEntity.ok(new UserWithOutPassDTO(u));
+            sessionValidator.isAlreadyLogged(session);
+            User u = userService.login(user.getUsername(),user.getPassword());
+            sessionValidator.userLogsIn(session,u.getId());
+            return  ResponseEntity.ok(new UserWithOutPassDTO(u));
         }
 
         @PostMapping(value ="/users/logout")
