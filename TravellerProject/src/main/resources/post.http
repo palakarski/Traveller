@@ -35,13 +35,15 @@ POST http://localhost:8080/posts/3/dislike
 ###
 POST http://localhost:8080/posts/3/undoDislike
 ###
+GET http://localhost:8080/posts/newsfeed
+###
 GET http://localhost:8080/posts/newsfeed/category
 ###
 GET http://localhost:8080/posts/newsfeed/date
 ###
 GET http://localhost:8080/posts/newsfeed/like
 ###
-GET http://localhost:8080/posts/allForeignPosts/category
+GET http://localhost:8080/posts/allForeignPosts
 ###
 GET http://localhost:8080/posts/allForeignPosts/date
 ###

@@ -70,21 +70,21 @@ public class PostController {
     @GetMapping(value = "post/search/{username}")
     public List<ResponsePostDTO> findAllPostOfUser(@PathVariable String username, HttpSession session) {
         sessionValidator.isUserLoged(session);
-        return postService.findPosts(username);
+        return postService.findPostsByUsername(username);
     }
 
-    @GetMapping(value = "post/comments/{postId}")
-    public List<CommentResponseDTO> showAllCommentsByPost(@PathVariable long postId, HttpSession session) {
-        sessionValidator.isUserLoged(session);
-        return postService.findComments(postId);
-    }
-
+//    @GetMapping(value = "post/comments/{postId}")
+//    public List<CommentResponseDTO> showAllCommentsByPost(@PathVariable long postId, HttpSession session) {
+//        sessionValidator.isUserLoged(session);
+//        return postService.findCommentsByPosts(postId);
+//    }
+    //TODO
     @GetMapping(value = "/post/{postId}/comments")
     public Page<CommentResponseDTO> getAllcomments(Pageable page,@PathVariable long postId,HttpSession session){
         sessionValidator.isUserLoged(session);
         return postService.getAllCommnetsByPost(page,postId);
     }
-    //return type ?
+
     @PostMapping(value = "/posts/{id}/like")
     public LikeDislikeMessageDTO likePost(@PathVariable long id, HttpSession session) {
         long userId = sessionValidator.isUserLogedIn(session);
@@ -108,11 +108,12 @@ public class PostController {
         long userId = sessionValidator.isUserLogedIn(session);
         return postService.undoDislikePost(id, userId);
     }
-    @GetMapping(value = "/posts/allForeignPosts/")
-    public List<ResponsePostDTO> getAllForeignPosts(HttpSession session) {
-        long userId = sessionValidator.isUserLogedIn(session);
-        return postService.getAllForeignPosts(userId);
-    }
+
+//    @GetMapping(value = "/posts/allForeignPosts")
+//    public List<ResponsePostDTO> getAllForeignPosts(HttpSession session) {
+//        long userId = sessionValidator.isUserLogedIn(session);
+//        return postService.getAllForeignPosts(userId);
+//    }
     //NEW
     @GetMapping(value = "/posts/allPosts/")
     public Page<ResponsePostDTO> getAllPosts(Pageable pageable,HttpSession session) {
@@ -128,15 +129,15 @@ public class PostController {
     }
 
     @GetMapping(value = "/posts/newsfeed")
-    public List<ResponsePostDTO> getNewsfeed (HttpSession session){
+    public Page<ResponsePostDTO> getNewsfeed (Pageable page ,HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
-        return postService.getNewsfeed(userId);
+        return postService.getNewsfeed(page,userId);
     }
 
     @GetMapping(value = "/posts/newsfeed/{filterName}")
-    public List<ResponsePostDTO> getNewsfeedWithFilter (@PathVariable String filterName, HttpSession session){
+    public Page<ResponsePostDTO> getNewsfeedWithFilter (Pageable page,@PathVariable String filterName, HttpSession session){
         long userId = sessionValidator.isUserLogedIn(session);
-        return postService.getNewsfeedWithFilter(userId, filterName);
+        return postService.getNewsfeedWithFilter(page,userId, filterName);
     }
 }
 
