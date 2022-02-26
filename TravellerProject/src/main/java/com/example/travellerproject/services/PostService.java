@@ -237,7 +237,6 @@ public class PostService {
 
 
     ////TODO add pageination to those metodo:
-
     public List<ResponsePostDTO> getForeignPosts(long userId) {
         User user = validator.validateUserAndGet(userId);
         List<Post> postPage = postRepository.getForeignPost(userId);

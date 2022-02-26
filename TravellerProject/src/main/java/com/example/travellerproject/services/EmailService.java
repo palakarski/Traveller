@@ -9,10 +9,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 @Service
-public class EmailService {
-/*
-    nov nachin -> ne raboti vzimaneto ot aplication properties
-    ostanaloto bachkashe , da se pogledne na novo
+public class EmailService{
 
     @Value("${mail.auth}")
     private String mailAuth;
@@ -20,14 +17,16 @@ public class EmailService {
     private String host;
     @Value("${mail.ttl}")
     private String ttlEnabled;
-    @Value("${mail.senderEmail}")
-    private String senderEmail;
-    @Value("${mail.senderPassword}")
-    private String senderPassword;
+//    @Value("${mail.senderEmail}")
+//    private String senderEmail;
+//    @Value("${mail.senderPassword}")
+//    private String senderPassword;
+    private static final String EMAIL_SENDER ="stefeanpvivan1998@gmail.com";
+    private static final String PASSWORD = "JAVA!&java17";
 
 
-    public void sendEmail(String recipient, String subject , String msg) {
 
+    public void sendEmailNew(String recipient, String subject , String msg) {
         Message message = prepareMessage(recipient, subject, msg);
         try {
             Transport.send(message);
@@ -38,22 +37,20 @@ public class EmailService {
     }
     private Message prepareMessage(String recipient, String subject, String msg){
         Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable","smtp.gmail.com");
-        properties.put("mail.smtp.host","true");
-        properties.put("mail.smtp.port", "587");
-        String myAccount = "stefeanpvivan1998@gmail.com";
-        String password = "CODMW@codmw2";
+        properties.put("mail.smtp.auth", mailAuth);
+        properties.put("mail.smtp.starttls.enable", ttlEnabled);
+        properties.put("mail.smtp.host",host);
+
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication(myAccount,password);
+                return new PasswordAuthentication(EMAIL_SENDER,PASSWORD);
             }
         });
 
         try{
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(myAccount));
+            message.setFrom(new InternetAddress(EMAIL_SENDER));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSubject(subject);
             message.setText(msg);
@@ -65,8 +62,8 @@ public class EmailService {
         }
     }
 
- */
-// star nachin ot youTube raboti
+
+/*
     public void sendEmail(String recepient,String subject , String msg){
         Properties properties = new Properties();
         properties.put("mail.smtp.auth","true");
@@ -102,4 +99,6 @@ public class EmailService {
         }
         return null;
     }
+
+ */
 }
