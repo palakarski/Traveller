@@ -18,12 +18,12 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
-    @PostMapping(value = "/image/upload/post/{id}")
+    @PostMapping(value = "/images/upload/post/{id}")
     public ResponseEntity<ImageDTO> uploadImg(@RequestParam(name = "file") MultipartFile file, @PathVariable long id, HttpSession session){
         return imageService.uploadImg(file,session,id);
     }
     @SneakyThrows
-    @GetMapping(value = "/image/{filename}")
+    @GetMapping(value = "/images/{filename}")
     public void downloadById(@PathVariable String filename, HttpServletResponse response){
         File file = new File("images"+File.separator+filename);
         if(!file.exists()){

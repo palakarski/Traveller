@@ -8,7 +8,7 @@ import com.example.travellerproject.model.pojo.Post;
 import com.example.travellerproject.model.pojo.PostCategory;
 import com.example.travellerproject.model.pojo.User;
 import com.example.travellerproject.repositories.CommentRepository;
-import com.example.travellerproject.repositories.PostCategotyRepository;
+import com.example.travellerproject.repositories.PostCategoryRepository;
 import com.example.travellerproject.repositories.PostRepository;
 import com.example.travellerproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class Validator {
     @Autowired
     private PostRepository postRepository;
     @Autowired
-    private PostCategotyRepository categotyRepository;
+    private PostCategoryRepository categotyRepository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -40,7 +40,7 @@ public class Validator {
             throw new BadRequestException("Username is mandatory");
         }
         if(username.length()<8){
-            throw new BadRequestException("Username must be atleast 8 symbols and lesser than 20 symbols");
+            throw new BadRequestException("Username must be between 8 and 20 symbols");
         }
         if(!username.matches("^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")){
                 throw new BadRequestException("Username must be between 8 and 20 characters.Only latin letters and numbers allowed");
@@ -57,17 +57,17 @@ public class Validator {
             throw new BadRequestException("Password is mandatory");
         }
         if(password.length()>30){
-            throw new BadRequestException("Password need to be lesser than 30 characters");
+            throw new BadRequestException("Password needs to be less than 30 characters");
         }
         if(!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")){
-            throw new BadRequestException("Password minimum eight characters, at least one letter, one number and one special character:");
+            throw new BadRequestException("Password must contain: eight characters, at least one letter, one number and one special character");
             //TODO wrong message
         }
 
     }
     public void matchPassAndConfPass(String password,String confpassword){
         if(!password.equals(confpassword)){
-            throw new BadRequestException("Passwords doesnt match");
+            throw new BadRequestException("Passwords does not match");
         }
     }
 
@@ -90,18 +90,18 @@ public class Validator {
                 throw new BadRequestException("Last name must be between 3 and 20 characters.");
             }
         if (!firstname.matches(lettersEng) || !lastname.matches(lettersEng)) {
-            throw new BadRequestException("Names must be written in latinic and must start with capital letter.");
+            throw new BadRequestException("Names must start with capital letter. All letters should be latin ");
         }
         }
 
     public void validateDateOfBirth(LocalDate dateOfBirth){
         if(dateOfBirth.isBefore(LocalDate.of(1920,1,1))||dateOfBirth.isAfter(LocalDate.of(2016,1,1))){
-            throw new UnauthorizedException("Either you are too young or too old");
+            throw new UnauthorizedException("You are either too young or too old");
         }
     }
     public void validateLonitudeAndLatitude(String longitude,String latitude){
         if(longitude.isBlank()||latitude.isBlank()){
-            throw new BadRequestException("Empty cordinates");
+            throw new BadRequestException("Coordinates can not be empty");
         }
         //Regex with six digital decimal
         if(!latitude.matches("^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$")){
@@ -133,7 +133,7 @@ public class Validator {
     }
     public void validateUserByEmail(String email){
         if(userRepository.findByEmail(email)==null){
-            throw new BadRequestException("We dont have user with this email");
+            throw new BadRequestException("User with this email does not exist");
         }
     }
 
@@ -153,12 +153,12 @@ public class Validator {
 
     public void validateImageExtention(String extension) {
         if(!extension.matches("(jpe?g|png|gif|bmp)")){
-            throw new BadRequestException("This file is not image");
+            throw new BadRequestException("This file is not an image");
         }
     }
     public void validateVideoExtention(String extension) {
         if(!extension.matches("(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)")){
-            throw new BadRequestException("This file is not video");
+            throw new BadRequestException("This file is not a video");
 
         }
     }

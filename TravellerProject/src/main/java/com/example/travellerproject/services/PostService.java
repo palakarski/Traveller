@@ -18,8 +18,6 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -134,11 +132,11 @@ public class PostService {
     public MessageDTO tagUser(long userId, long tagUserid, long pId) {
 
         Post post = validator.validatePostAndGet(pId);
-        User tagedUser = validator.validateUserAndGet(tagUserid);
-        if(post.getUserTagAtPosts().contains(tagedUser)){
+        User taggedUser = validator.validateUserAndGet(tagUserid);
+        if(post.getUserTagAtPosts().contains(taggedUser)){
             throw new BadRequestException("This user is already tagged in this post");
         }
-        post.getUserTagAtPosts().add(tagedUser);
+        post.getUserTagAtPosts().add(taggedUser);
         postRepository.save(post);
         return new MessageDTO("You have tagged " + tagUserid);
     }
@@ -147,7 +145,7 @@ public class PostService {
         Post post = validator.validatePostAndGet(pId);
         User tagedUser = validator.validateUserAndGet(tagUserid);
         if(userId!=post.getUser().getId()){
-            throw new UnauthorizedException("You can't untag this user,because you aren't the owner of the post");
+            throw new UnauthorizedException("You can't untag this user, because you aren't owner of the post");
         }
         if(!post.getUserTagAtPosts().contains(tagedUser)){
             throw new BadRequestException("This user isn't tagged in this post");
@@ -156,16 +154,16 @@ public class PostService {
         postRepository.save(post);
         return new MessageDTO("You have untagged " + tagUserid);
     }
-    public List<OwnerOfPostOrCommentDTO> getAllTagedUsers(long userId, long pId) {
+    public List<OwnerOfPostOrCommentDTO> getAllTaggedUsers(long userId, long pId) {
         Post post = validator.validatePostAndGet(pId);
-        List<OwnerOfPostOrCommentDTO> tagedUsers = new ArrayList<>();
+        List<OwnerOfPostOrCommentDTO> taggedUsers = new ArrayList<>();
         if(post.getUserTagAtPosts().isEmpty()){
             throw new BadRequestException("No tagged users found.");
         }
         for (User u : post.getUserTagAtPosts()) {
-            tagedUsers.add(new OwnerOfPostOrCommentDTO(u));
+            taggedUsers.add(new OwnerOfPostOrCommentDTO(u));
         }
-        return tagedUsers;
+        return taggedUsers;
     }
     public List<ResponsePostDTO> findPostsByUsername(String username) {
         User user = userRepository.findByUsername(username);
@@ -184,6 +182,8 @@ public class PostService {
 
 
 
+
+
     public Page<ResponsePostDTO> getNewsfeed(Pageable page, long userId) {
         User user = validator.validateUserAndGet(userId);
         if (user.getFollowedUsers().isEmpty()) {
@@ -199,7 +199,7 @@ public class PostService {
     }
 
 
-    public Page<ResponsePostDTO> getNewsfeedWithFilter(Pageable pageable,long userId, String filterName){
+    public Page<ResponsePostDTO> getNewsfeedFiltered(Pageable pageable, long userId, String filterName){
         User user = userRepository.getById(userId);
         //TODO remove filter validation in validator service
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
@@ -217,7 +217,7 @@ public class PostService {
                 posts = postRepository.getNewsFeedSortedByCategory(pageable,userId);
             }break;
             case "like" : {
-                posts = postRepository.findPostByUserOrderByLikers(pageable,userId);
+                posts = postRepository.findPostByUserOrderByLikes(pageable,userId);
             }break;
         }
         Page<ResponsePostDTO> sortedNewsfeed = posts.map(ResponsePostDTO::new);
@@ -226,42 +226,54 @@ public class PostService {
 
 
 
-    public List<ResponsePostDTO> getAllForeignPostsFiltered(long userId, String filterName){
+
+
+
+
+
+
+
+
+
+
+    ////TODO add pageination to those metodo:
+
+    public List<ResponsePostDTO> getForeignPosts(long userId) {
+        User user = validator.validateUserAndGet(userId);
+        List<Post> postPage = postRepository.getForeignPost(userId);
+        List<ResponsePostDTO> postDTOS = new ArrayList<>();
+        for (Post p : postPage){
+            postDTOS.add(modelMapper.map(p,ResponsePostDTO.class));
+        }
+        return postDTOS;
+    }
+    ////TODO add pageination to those metodo:
+    public List<ResponsePostDTO> getForeignPostsFiltered(long userId, String filterName){
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
-        List <ResponsePostDTO> sortedForeignPosts = getAllForeignPostsUnsorted(userId);
-        return filterPostsCollection(sortedForeignPosts,filterName);
-    }
-
-
-    private List<ResponsePostDTO> getAllForeignPostsUnsorted(long userId){
-        User u  = userRepository.getById(userId);
-        String userName = u.getUsername();
-        //findAllByUsernameIsNot - raboti sas string
-       List<Post> allForeignPosts = postRepository.getAllForeignPost(userId);
-       List<ResponsePostDTO> dtos = new ArrayList<>();
-       for(Post post : allForeignPosts){
-           ResponsePostDTO currDto = new ResponsePostDTO(post);
-           dtos.add(currDto);
-       }
-       return dtos;
-    }
-
-    private List<ResponsePostDTO> filterPostsCollection(List<ResponsePostDTO> collection,String filterName){
+        List <ResponsePostDTO> postDTOSFiltered = new ArrayList<>();
+        List<Post> posts = null;
         switch (filterName){
             case "date" :{
-                collection.sort((post1 , post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+                posts = postRepository.getAllForeignPostByDate(userId);
             }break;
             case "category" :{
-                collection.sort((post1 , post2) -> post2.getPostCategory().getCategoryType().compareTo(post1.getPostCategory().getCategoryType()));
+                posts = postRepository.getAllForeignPostByCategory(userId);
             }break;
             case "like" : {
-                collection.sort((post1 , post2) -> post2.getLikes()-post1.getLikes());
+                posts = postRepository.getAllForeignPostByLikes(userId);
             }break;
         }
-        return collection;
+        for (Post p : posts){
+            postDTOSFiltered.add(modelMapper.map(p,ResponsePostDTO.class));
+        }
+        return postDTOSFiltered;
     }
+
+
+
+
 
 //    public List<CommentResponseDTO> findCommentsByPosts(long postId) {
 //        Post post = validator.validatePostAndGet(postId);
@@ -285,23 +297,13 @@ public class PostService {
 //    }
 
 
-
-
-    public Page<CommentResponseDTO> getAllCommnetsByPost(Pageable page, long postId) {
+    public Page<CommentResponseDTO> getAllCommentsByPost(Pageable page, long postId) {
         Post post = validator.validatePostAndGet(postId);
         Page<Comment> comments = commentRepository.findAllByPostId(page,postId);
         Page<CommentResponseDTO> commentResponseDTOS = comments.map(CommentResponseDTO::new);
         if(comments.isEmpty()){
             throw new BadRequestException("No comments found for this post");
         }
-
         return commentResponseDTOS;
-    }
-
-    public Page<ResponsePostDTO> getAllPosts(Pageable pageable, long userId) {
-        User user = validator.validateUserAndGet(userId);
-        Page<Post> postPage = postRepository.findPostsByUserIsNot(pageable,user);
-        Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
-        return responsePostDTOS;
     }
 }

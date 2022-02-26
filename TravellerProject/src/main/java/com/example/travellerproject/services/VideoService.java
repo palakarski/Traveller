@@ -32,7 +32,7 @@ public class VideoService {
 
     @SneakyThrows
     public ResponseEntity<VideoDTO> uploadImg(MultipartFile file, HttpSession session, long postId) {
-        long userId = sessionValidator.isUserLogedIn(session);
+        long userId = sessionValidator.isUserLoggedIn(session);
         User user = validator.validateUserAndGet(userId);
         Post post = validator.validatePostAndGet(postId);
         if(user.getId()!=post.getUser().getId()){

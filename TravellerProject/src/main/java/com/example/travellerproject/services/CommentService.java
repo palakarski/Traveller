@@ -51,7 +51,7 @@ public class CommentService {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
         if(comment.getUser().equals(user) || !user.isAdmin()){
-            throw new UnauthorizedException("This comment isn't your,and you can't delete it.");
+            throw new UnauthorizedException("This comment isn't yours, and you can't delete it.");
         }
         commentRepository.delete(comment);
         return new MessageDTO("Comment was deleted");
@@ -67,7 +67,7 @@ public class CommentService {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
         if(comment.getUser().equals(user) || !user.isAdmin()){
-            throw new UnauthorizedException("You cant edit comment that u didnt post.");
+            throw new UnauthorizedException("You cannot edit comment that u did not post.");
         }
         modelMapper.map(commentRequestDTO,comment);
         commentRepository.save(comment);
@@ -83,7 +83,7 @@ public class CommentService {
             throw new BadRequestException("You have already liked this comment");
         }
         if (user.getDislikedComments().contains(comment)){
-            throw new BadRequestException("You have disliked this comment.Please undo it.");
+            throw new BadRequestException("You have disliked this comment. Please undo it.");
         }
         comment.getCommentLikers().add(user);
 
