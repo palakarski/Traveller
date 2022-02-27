@@ -27,7 +27,7 @@ public class ImageService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private ImageRepositorty imageRepositoty;
+    private ImageRepositorty imageRepository;
     @Autowired
     private Validator validator;
 
@@ -38,7 +38,7 @@ public class ImageService {
         User user = validator.validateUserAndGet(userId);
         Post post = validator.validatePostAndGet(postId);
         if(user.getId()!=post.getUser().getId()){
-            throw new UnauthorizedException("This post isn't yours. You cannot add images");
+            throw new UnauthorizedException("This post is not  yours. You cannot add images");
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
         validator.validateImageExtention(extension);
@@ -53,7 +53,7 @@ public class ImageService {
         }else{
             throw new BadRequestException("Sorry a post can have only 3 photos");
         }
-        imageRepositoty.save(image);
+        imageRepository.save(image);
 
         return ResponseEntity.ok(modelMapper.map(image,ImageDTO.class));
     }

@@ -32,4 +32,5 @@ public class UserRegisterDTO {
     
     private char gender;
 
+
 }

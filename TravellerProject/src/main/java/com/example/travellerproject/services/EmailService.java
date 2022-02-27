@@ -21,8 +21,8 @@ public class EmailService{
     private String senderEmail;
     @Value("${spring.mail.password}")
     private String senderPassword;
-//    private static final String EMAIL_SENDER ="stefeanpvivan1998@gmail.com";
-//    private static final String PASSWORD = "JAVA!&java17";
+
+
 
 
 

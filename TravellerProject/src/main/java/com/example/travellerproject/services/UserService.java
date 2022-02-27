@@ -3,9 +3,12 @@ package com.example.travellerproject.services;
 import com.example.travellerproject.exceptions.AuthenticationException;
 import com.example.travellerproject.exceptions.BadRequestException;
 import com.example.travellerproject.exceptions.NotFoundException;
+import com.example.travellerproject.exceptions.UnauthorizedException;
 import com.example.travellerproject.model.dto.MessageDTO;
 import com.example.travellerproject.model.dto.user.*;
+import com.example.travellerproject.model.pojo.PostCategory;
 import com.example.travellerproject.model.pojo.User;
+import com.example.travellerproject.repositories.PostCategoryRepository;
 import com.example.travellerproject.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -35,6 +38,8 @@ public class UserService {
     private ModelMapper modelMapper;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PostCategoryRepository postCategoryRepository;
 
         public User login(String username, String password){
 
@@ -90,14 +95,14 @@ public class UserService {
         public MessageDTO changePassword(long id, UserChangePasswordDTO changePasswordDTO) {
                 User u = validator.validateUserAndGet(id);
                 String newPassword = changePasswordDTO.getNewpassword();
-                String confnewpassword = changePasswordDTO.getConfnewpassword();
-                String oldpassword = changePasswordDTO.getOldpassword();
+                String newPasswordConfirmed = changePasswordDTO.getConfnewpassword();
+                String oldPassword = changePasswordDTO.getOldpassword();
 
-                if(!passwordEncoder.matches(oldpassword,u.getPassword())) {
-                    throw new AuthenticationException("Oldpassword doesnt match.");
+                if(!passwordEncoder.matches(oldPassword,u.getPassword())) {
+                    throw new AuthenticationException("Old password doesnt match.");
                 }
                 validator.validPassword(newPassword);
-                validator.matchPassAndConfPass(newPassword,confnewpassword);
+                validator.matchPassAndConfPass(newPassword,newPasswordConfirmed);
                 u.setPassword(passwordEncoder.encode(newPassword));
                 userRepository.save(u);
                 return new MessageDTO("Password was changed.");
@@ -117,31 +122,31 @@ public class UserService {
             String msg = "your new pass is :" + pwd;
             Thread thread = new Thread(() -> emailService.sendEmailNew(recipient, subject, msg));
             thread.start();
-            return new MessageDTO("Password was changed. You can log in with your new password");
+            return new MessageDTO("Password was changed. You can login with your new password");
         }
 
         @Transactional
-        public MessageDTO follow(long userId, long subcribedForId) {
-                User subcriber = validator.validateUserAndGet(userId);
-                User subscribedFor = validator.validateUserAndGet(subcribedForId);
-                if(subcriber.getFollowedUsers().contains(subscribedFor)){
+        public MessageDTO follow(long userId, long subscribedForId) {
+                User subscriber = validator.validateUserAndGet(userId);
+                User subscribedFor = validator.validateUserAndGet(subscribedForId);
+                if(subscriber.getFollowedUsers().contains(subscribedFor)){
                     throw new BadRequestException("Sorry you have already followed this user.");
                 }
-                subcriber.getFollowedUsers().add(subscribedFor);
-                userRepository.save(subcriber);
-                return new MessageDTO("You have subscribe for user with id " + subcribedForId);
+                subscriber.getFollowedUsers().add(subscribedFor);
+                userRepository.save(subscriber);
+                return new MessageDTO("You have subscribed for user with id " + subscribedForId);
         }
 
         @Transactional
-        public MessageDTO unfollow(long userId, long subcribedForId) {
-                User subcriber = validator.validateUserAndGet(userId);
-                User subscribedFor = validator.validateUserAndGet(subcribedForId);
-                if(!subcriber.getFollowedUsers().contains(subscribedFor)){
+        public MessageDTO unfollow(long userId, long subscribedForId) {
+                User subscriber = validator.validateUserAndGet(userId);
+                User subscribedFor = validator.validateUserAndGet(subscribedForId);
+                if(!subscriber.getFollowedUsers().contains(subscribedFor)){
                     throw new BadRequestException("Sorry you dont follow this user.");
                 }
-                subcriber.getFollowedUsers().remove(subscribedFor);
-                userRepository.save(subcriber);
-                return new MessageDTO("You have unsubscribe for user with id " + subcribedForId);
+                subscriber.getFollowedUsers().remove(subscribedFor);
+                userRepository.save(subscriber);
+                return new MessageDTO("You have unsubscribe for user with id " + subscribedForId);
         }
 
         @Transactional
@@ -152,5 +157,18 @@ public class UserService {
                 modelMapper.map(editUserDTO,u);
                 userRepository.save(u);
                 return modelMapper.map(u,UserWithOutPassDTO.class);
+        }
+
+        public MessageDTO createCategory(long userId, UserCreatesCategoryDTO categoryDTO){
+            User user = userRepository.getById(userId);
+            if (!user.isAdmin()){
+                throw  new UnauthorizedException("You must be admin in order to create a category of posts");
+            }
+            if(categoryDTO.getCategoryType().isBlank()){
+                throw new BadRequestException("Category must be valid");
+            }
+            PostCategory postCategory = modelMapper.map(categoryDTO,PostCategory.class);
+            postCategoryRepository.save(postCategory);
+            return new MessageDTO("New category with name "+categoryDTO.getCategoryType()+" was made");
         }
 }

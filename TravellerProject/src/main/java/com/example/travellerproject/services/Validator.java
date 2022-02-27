@@ -38,13 +38,13 @@ public class Validator {
     public void validateUsername(String username){
 
         if(username == null || username.isBlank()){
-            throw new BadRequestException("Username is mandatory");
+            throw new BadRequestException("Username is mandatory.");
         }
         if(username.length()<8){
-            throw new BadRequestException("Username must be between 8 and 20 symbols");
+            throw new BadRequestException("Username must be between 8 and 20 symbols.");
         }
         if(!username.matches("^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$")){
-                throw new BadRequestException("Username must be between 8 and 20 characters.Only latin letters and numbers allowed");
+                throw new BadRequestException("Username must be between 8 and 20 characters.Only latin letters and numbers allowed.");
         }
     }
     public void checkUsernameUnique(String username){
@@ -55,26 +55,26 @@ public class Validator {
     }
     public void validPassword(String password){
         if(password == null || password.isBlank()){
-            throw new BadRequestException("Password is mandatory");
+            throw new BadRequestException("Password is mandatory.");
         }
         if(password.length()>30){
-            throw new BadRequestException("Password needs to be less than 30 characters");
+            throw new BadRequestException("Password needs to be less than 30 characters.");
         }
         if(!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")){
-            throw new BadRequestException("Password must contain: eight characters, at least one letter, one number and one special character");
+            throw new BadRequestException("Password must contain: eight characters, at least one letter, one number and one special character.");
             //TODO wrong message
         }
 
     }
     public void matchPassAndConfPass(String password,String confpassword){
         if(!password.equals(confpassword)){
-            throw new BadRequestException("Passwords does not match");
+            throw new BadRequestException("Passwords does not match.");
         }
     }
 
     public void validEmail(String email){
         if(userRepository.findByEmail(email)!=null){
-            throw new BadRequestException("Email is already taken");
+            throw new BadRequestException("Email is already taken.");
         }
         if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new BadRequestException("Wrong email.");
@@ -91,18 +91,18 @@ public class Validator {
                 throw new BadRequestException("Last name must be between 3 and 20 characters.");
             }
         if (!firstname.matches(lettersEng) || !lastname.matches(lettersEng)) {
-            throw new BadRequestException("Names must start with capital letter. All letters should be latin ");
+            throw new BadRequestException("Names must start with capital letter. All letters should be latin.");
         }
         }
 
     public void validateDateOfBirth(LocalDate dateOfBirth){
         if(dateOfBirth.isBefore(LocalDate.of(1920,1,1))||dateOfBirth.isAfter(LocalDate.of(2016,1,1))){
-            throw new UnauthorizedException("You are either too young or too old");
+            throw new UnauthorizedException("You are either too young or too old.");
         }
     }
-    public void validateLonitudeAndLatitude(String longitude,String latitude){
+    public void validateLongtitudeAndLatitude(String longitude, String latitude){
         if(longitude.isBlank()||latitude.isBlank()){
-            throw new BadRequestException("Coordinates can not be empty");
+            throw new BadRequestException("Coordinates can not be empty.");
         }
         //Regex with six digital decimal
         if(!latitude.matches("^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$")){
@@ -115,52 +115,51 @@ public class Validator {
     }
     public void validateTitle(String title){
         if(title.isBlank()||title.length()<20){
-            throw new BadRequestException("Title must be at least 20 characters");
+            throw new BadRequestException("Title must be at least 20 characters.");
 
         }
     }
     public PostCategory validateCategory(long cateId){
-        return categotyRepository.findById(cateId).orElseThrow(()-> new NotFoundException("Post Category not found " + cateId));
+        return categotyRepository.findById(cateId).orElseThrow(()-> new NotFoundException("Post Category not found " + cateId+"."));
     }
 
     public User validateUserAndGet(long userId){
-        return userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found with id " + userId));
+        return userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found with id " + userId+"."));
     }
     public Post validatePostAndGet(long postId){
-        return postRepository.findById(postId).orElseThrow(()-> new NotFoundException("Post not found with id " + postId));
+        return postRepository.findById(postId).orElseThrow(()-> new NotFoundException("Post not found with id " + postId+"."));
     }
     public Comment validateCommentAndGet(long comId){
-        return commentRepository.findById(comId).orElseThrow(()-> new NotFoundException("Comment not found with id " + comId));
+        return commentRepository.findById(comId).orElseThrow(()-> new NotFoundException("Comment not found with id " + comId+"."));
     }
     public void validateUserByEmail(String email){
         if(userRepository.findByEmail(email)==null){
-            throw new BadRequestException("User with this email does not exist");
+            throw new BadRequestException("User with this email does not exist.");
         }
     }
 
     public User validateUsernameAndPassword(String username, String password) {
         User u = userRepository.findByUsername(username);
         if(u == null || !passwordEncoder.matches(password,u.getPassword())){
-            throw new UnauthorizedException("Wrong credentials");
+            throw new UnauthorizedException("Wrong credentials.");
         }
         return u;
     }
     public void validateUserAndPostOwnership(Post post,long userId){
         User user = validateUserAndGet(userId);
         if(post.getUser().getId()!=userId && !user.isAdmin()){
-            throw new BadRequestException("You are not owner of this post");
+            throw new BadRequestException("You are not owner of this post.");
         }
     }
 
     public void validateImageExtention(String extension) {
         if(!extension.matches("(jpe?g|png|gif|bmp)")){
-            throw new BadRequestException("This file is not an image");
+            throw new BadRequestException("This file is not an image.");
         }
     }
     public void validateVideoExtention(String extension) {
         if(!extension.matches("(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)")){
-            throw new BadRequestException("This file is not a video");
-
+            throw new BadRequestException("This file is not a video.");
         }
     }
 

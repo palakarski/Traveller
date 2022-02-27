@@ -45,7 +45,7 @@ public class PostService {
     public ResponsePostDTO createPost(RequestPostDTO requestPostDTO,long userId) {
         long postCategoryId = requestPostDTO.getPostCategory();
         validator.validateTitle(requestPostDTO.getTitle());
-        validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
+        validator.validateLongtitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
         Post post = modelMapper.map(requestPostDTO, Post.class);
         post.setUser(validator.validateUserAndGet(userId));
         post.setPostCategory(validator.validateCategory(postCategoryId));
@@ -75,7 +75,7 @@ public class PostService {
         Post post = validator.validatePostAndGet(id);
         validator.validateUserAndPostOwnership(post,userId);
         validator.validateTitle(requestPostDTO.getTitle());
-        validator.validateLonitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
+        validator.validateLongtitudeAndLatitude(requestPostDTO.getLongitude(),requestPostDTO.getLatitude());
         validator.validateCategory(requestPostDTO.getPostCategory());
         modelMapper.map(requestPostDTO,post);
         postRepository.save(post);
@@ -147,7 +147,7 @@ public class PostService {
         }
         post.getUserTagAtPosts().add(taggedUser);
         postRepository.save(post);
-        return new MessageDTO("You have tagged " + tagUserid);
+        return new MessageDTO("You have tagged user with id :" + tagUserid);
     }
     
     @Transactional
@@ -162,7 +162,7 @@ public class PostService {
         }
         post.getUserTagAtPosts().remove(tagedUser);
         postRepository.save(post);
-        return new MessageDTO("You have untagged " + tagUserid);
+        return new MessageDTO("You have untagged user with id:" + tagUserid);
     }
 
     public List<OwnerOfPostOrCommentDTO> getAllTaggedUsers(long userId, long pId) {
@@ -238,9 +238,9 @@ public class PostService {
         }
         Page<Post> posts = null;
         switch (filterName){
-            case "date" -> posts = postRepository.getAllForeignPostByDate(page,userId);
-            case "category" ->posts = postRepository.getAllForeignPostByCategory(page,userId);
-            case "like"->posts = postRepository.getAllForeignPostByLikes(page,userId);
+            case "date" -> posts = postRepository.getAllForeignPostSortedByDate(page,userId);
+            case "category" ->posts = postRepository.getAllForeignPostSortedByCategory(page,userId);
+            case "like"->posts = postRepository.getAllForeignPostSortedByLikes(page,userId);
         }
         Page<ResponsePostDTO>postDTOSFiltered= posts.map(ResponsePostDTO::new);
         return postDTOSFiltered;
