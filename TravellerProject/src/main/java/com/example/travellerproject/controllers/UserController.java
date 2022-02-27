@@ -66,8 +66,8 @@ public class UserController {
 
         @PutMapping(value = "/users/forgotten_password")
         public MessageDTO forgottenPass(HttpSession session, @RequestBody UserForgottenPassDTO forgottenPassDTO){
-                sessionValidator.isAlreadyLogged(session);
-                return userService.forgottenPassword(session, forgottenPassDTO);
+            sessionValidator.isAlreadyLogged(session);
+            return userService.forgottenPassword(forgottenPassDTO);
         }
 
         @GetMapping(value = "/users/{id}")
@@ -80,7 +80,6 @@ public class UserController {
         public ResponseEntity<UserWithOutPassDTO> getByusername(@PathVariable String username){
             return ResponseEntity.ok(userService.getByUserName(username));
         }
-
 
         @PostMapping(value = "/users/{id}/follow")
         public MessageDTO follow(@PathVariable long id,HttpSession session){
@@ -99,7 +98,4 @@ public class UserController {
             }
             return userService.unfollow(userId,id);
         }
-
-
-
 }

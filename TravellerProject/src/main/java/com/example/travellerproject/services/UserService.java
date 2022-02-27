@@ -45,24 +45,24 @@ public class UserService {
         }
 
         public User register(UserRegisterDTO dto){
+            validator.validateUsername(dto.getUsername());
+            validator.checkUsernameUnique(dto.getUsername());
+            validator.validPassword(dto.getPassword());
+            validator.matchPassAndConfPass(dto.getPassword(),dto.getConfpassword());
+            validator.validEmail(dto.getEmail());
+            validator.validateFirstnameAndLastName(dto.getFirstName(),dto.getLastName());
+            validator.validateDateOfBirth(dto.getBirthDate());
 
-                validator.validateUsername(dto.getUsername());
-                validator.checkUsernameUnique(dto.getUsername());
-                validator.validPassword(dto.getPassword());
-                validator.matchPassAndConfPass(dto.getPassword(),dto.getConfpassword());
-                validator.validEmail(dto.getEmail());
-                validator.validateFirstnameAndLastName(dto.getFirstName(),dto.getLastName());
-                validator.validateDateOfBirth(dto.getBirthDate());
-
-                User u = modelMapper.map(dto,User.class);
-                u.setPassword(passwordEncoder.encode(dto.getPassword()));
-                u.setCreatedAt(LocalDateTime.now());
-                userRepository.save(u);
-                //star nachin
-                emailService.sendEmail("stefeanpvivan1998@gmail.com","REGISTRATION", "Welcome to traveller");
-                //nov nachin
-                //emailService.sendEmail("stefeanpvivan1998@gmail.com","Traveller Registration", "WELCOME");
-                return u;
+            User u = modelMapper.map(dto,User.class);
+            u.setPassword(passwordEncoder.encode(dto.getPassword()));
+            u.setCreatedAt(LocalDateTime.now());
+            userRepository.save(u);
+            String recipient = "stefeanpvivan1998@gmail.com";
+            String subject = "Registration ";
+            String msg = "Your registration was successful. Welcome to Traveller";
+            Thread thread = new Thread(() -> emailService.sendEmailNew(recipient, subject, msg));
+            thread.start();
+            return u;
         }
 
 
@@ -91,7 +91,7 @@ public class UserService {
         @Transactional
         public MessageDTO changePassword(long id, UserChangePasswordDTO changePasswordDTO) {
                 User u = validator.validateUserAndGet(id);
-                String newpassword = changePasswordDTO.getNewpassword();
+                String newPassword = changePasswordDTO.getNewpassword();
                 String confnewpassword = changePasswordDTO.getConfnewpassword();
                 String oldpassword = changePasswordDTO.getOldpassword();
 
@@ -99,25 +99,29 @@ public class UserService {
                     throw new AuthenticationException("Oldpassword doesnt match.");
                 }
 
-                validator.validPassword(newpassword);
-                validator.matchPassAndConfPass(newpassword,confnewpassword);
-                u.setPassword(passwordEncoder.encode(newpassword));
+                validator.validPassword(newPassword);
+                validator.matchPassAndConfPass(newPassword,confnewpassword);
+                u.setPassword(passwordEncoder.encode(newPassword));
                 userRepository.save(u);
                 return new MessageDTO("Password was changed.");
         }
 
 
         @Transactional
-        public MessageDTO forgottenPassword(HttpSession session, UserForgottenPassDTO dto) {
-                validator.validateUserByEmail(dto.getEmail());
-
-                String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
-                String pwd = RandomStringUtils.random(8, characters);
-                User u = userRepository.findByEmail(dto.getEmail());
-                u.setPassword(passwordEncoder.encode(pwd));
-                userRepository.save(u);
-                emailService.sendEmail("stefeanpvivan1998@gmail.com", "passwordChange", "your new pass is : " + pwd);
-                    return new MessageDTO("Password was changed you can login now.");
+        public MessageDTO forgottenPassword(UserForgottenPassDTO dto) {
+            String email = dto.getEmail();
+            validator.validateUserByEmail(email);
+            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*#?&";
+            String pwd = RandomStringUtils.random(8, characters)+"1!aA";
+            User u = userRepository.findByEmail(email);
+            u.setPassword(passwordEncoder.encode(pwd));
+            userRepository.save(u);
+            String recipient = "stefeanpvivan1998@gmail.com";
+            String subject = "Password change!";
+            String msg = "your new pass is :" + pwd;
+            Thread thread = new Thread(() -> emailService.sendEmailNew(recipient, subject, msg));
+            thread.start();
+            return new MessageDTO("Password was changed. You can log in with your new password");
         }
 
         @Transactional
@@ -153,4 +157,4 @@ public class UserService {
                 userRepository.save(u);
                 return modelMapper.map(u,UserWithOutPassDTO.class);
         }
-    }
+}

@@ -150,15 +150,16 @@ Content-Type: application/json
 {
   "firstName":"Alex",
   "lastName":"Rangelov",
-  "username":"OLDfodsssdest",
+  "username":"GolqmataNishka1",
   "birthDate":"1993-02-22",
-  "email":"old@test",
+  "email":"GolqmataNishka1@test",
   "password":"123456789@A",
   "confpassword":"123456789@A",
   "createdAt":"1993-02-22T00:00:00",
   "admin":true
 }
 ###
+
 POST http://localhost:8080/login
 Content-Type: application/json
 
@@ -169,14 +170,12 @@ Content-Type: application/json
 
 }
 ###
-POST http://localhost:8080/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-
-  "username":"forgotenTest",
-  "password":"12345678@A"
-
+  "username":"GolqmataNishka1",
+  "password":"ir1appZc1!aA"
 }
 
 ###
@@ -196,14 +195,11 @@ Content-Type: application/json
   "gender":"f"
 }
 ###
-PUT http://localhost:8080/changepass
+PUT http://localhost:8080/users/forgotten_password
 Content-Type: application/json
 
 {
-  "oldpassword" : ":@L#:!LKP",
-  "newpassword" : "palakarski1@",
-  "confnewpassword" : "palakarski1@"
-
+  "email" : "GolqmataNishka1@test"
 }
 
 ###

@@ -210,7 +210,6 @@ public class PostService {
 
     public Page<ResponsePostDTO> getNewsfeedFiltered(Pageable pageable, long userId, String filterName){
         User user = userRepository.getById(userId);
-        //TODO remove filter validation in validator service
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
@@ -226,6 +225,7 @@ public class PostService {
         Page<ResponsePostDTO> sortedNewsfeed = posts.map(ResponsePostDTO::new);
         return sortedNewsfeed;
     }
+    ////TODO add pageination to those metodo:
 
     public Page<ResponsePostDTO> getForeignPosts(Pageable page,long userId) {
         User user = validator.validateUserAndGet(userId);
