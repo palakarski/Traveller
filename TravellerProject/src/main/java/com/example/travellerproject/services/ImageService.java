@@ -42,6 +42,7 @@ public class ImageService {
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
         validator.validateImageExtention(extension);
+        validator.validateFileSize(file);
         String name = System.nanoTime()+"."+ extension;
         Files.copy(file.getInputStream(), new File("images" + File.separator + name).toPath());
         Image image = new Image();

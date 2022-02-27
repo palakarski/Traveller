@@ -40,6 +40,7 @@ public class VideoService {
         }
         String  extension = FilenameUtils.getExtension(file.getOriginalFilename());
         validator.validateVideoExtention(extension);
+        validator.validateFileSize(file);
         String name = System.nanoTime()+"."+ extension;
         Files.copy(file.getInputStream(), new File("video" + File.separator + name).toPath());
         Video video = new Video();

@@ -50,7 +50,7 @@ public class CommentService {
     public MessageDTO deleteComment(long commentId,long userId) {
         Comment comment = validator.validateCommentAndGet(commentId);
         User user = validator.validateUserAndGet(userId);
-        if(comment.getUser().equals(user) || !user.isAdmin()){
+        if(!comment.getUser().equals(user) && !user.isAdmin()){
             throw new UnauthorizedException("This comment isn't yours, and you can't delete it.");
         }
         commentRepository.delete(comment);

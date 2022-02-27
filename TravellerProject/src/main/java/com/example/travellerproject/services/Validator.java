@@ -14,6 +14,7 @@ import com.example.travellerproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -31,7 +32,7 @@ public class Validator {
     @Autowired
     private CommentRepository commentRepository;
 
-
+    private static final double MAX_SIZE_FILE_MB= 200;
     String lettersEng = "[A-Z][a-z]+";
 
     public void validateUsername(String username){
@@ -160,6 +161,13 @@ public class Validator {
         if(!extension.matches("(avi|AVI|wmv|WMV|flv|FLV|mpg|MPG|mp4|MP4)")){
             throw new BadRequestException("This file is not a video");
 
+        }
+    }
+
+    public void validateFileSize(MultipartFile file) {
+        double sizeMB = file.getSize()*0.00000095367432;
+        if(sizeMB>MAX_SIZE_FILE_MB){
+        throw new BadRequestException("Can't upload file bigger than 200 MB.");
         }
     }
 }

@@ -192,7 +192,6 @@ public class PostService {
         return postsDTO;
     }
 
-
     public Page<ResponsePostDTO> getNewsfeed(Pageable page, long userId) {
         User user = validator.validateUserAndGet(userId);
         if (user.getFollowedUsers().isEmpty()) {
@@ -225,7 +224,6 @@ public class PostService {
         Page<ResponsePostDTO> sortedNewsfeed = posts.map(ResponsePostDTO::new);
         return sortedNewsfeed;
     }
-    ////TODO add pageination to those metodo:
 
     public Page<ResponsePostDTO> getForeignPosts(Pageable page,long userId) {
         User user = validator.validateUserAndGet(userId);
@@ -247,32 +245,6 @@ public class PostService {
         Page<ResponsePostDTO>postDTOSFiltered= posts.map(ResponsePostDTO::new);
         return postDTOSFiltered;
     }
-
-
-
-
-
-//    public List<CommentResponseDTO> findCommentsByPosts(long postId) {
-//        Post post = validator.validatePostAndGet(postId);
-//        List<CommentResponseDTO>  comments= new ArrayList<>();
-//        for (Comment c: post.getComments()) {
-//            comments.add(new CommentResponseDTO(c));
-//        }
-//        if(comments.isEmpty()){
-//            throw new BadRequestException("No comments found for this post");
-//        }
-//        return comments;
-//    }
-//
-//    public List<ResponsePostDTO> getAllForeignPosts(long userId) {
-//        List<Post> posts = postRepository.getAllForeignPost(userId);
-//        List<ResponsePostDTO> postDTOS = new ArrayList<>();
-//        for (Post p : posts){
-//            postDTOS.add(modelMapper.map(p,ResponsePostDTO.class));
-//        }
-//        return postDTOS;
-//    }
-
 
     public Page<CommentResponseDTO> getAllCommentsByPost(Pageable page, long postId) {
         Post post = validator.validatePostAndGet(postId);

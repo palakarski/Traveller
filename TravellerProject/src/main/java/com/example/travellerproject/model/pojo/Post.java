@@ -56,7 +56,7 @@ public class Post {
 
     private String title;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post",cascade = { CascadeType.ALL })
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 

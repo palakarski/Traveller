@@ -11,18 +11,18 @@ import java.util.Properties;
 @Service
 public class EmailService{
 
-    @Value("${mail.auth}")
+    @Value("${spring.mail.properties.mail.smtp.auth}")
     private String mailAuth;
-    @Value("${mail.host}")
+    @Value("${spring.mail.host}")
     private String host;
-    @Value("${mail.ttl}")
+    @Value("${spring.mail.properties.mail.smtp.stattls.enable}")
     private String ttlEnabled;
-//    @Value("${mail.senderEmail}")
-//    private String senderEmail;
-//    @Value("${mail.senderPassword}")
-//    private String senderPassword;
-    private static final String EMAIL_SENDER ="stefeanpvivan1998@gmail.com";
-    private static final String PASSWORD = "JAVA!&java17";
+    @Value("${spring.mail.username}")
+    private String senderEmail;
+    @Value("${spring.mail.password}")
+    private String senderPassword;
+//    private static final String EMAIL_SENDER ="stefeanpvivan1998@gmail.com";
+//    private static final String PASSWORD = "JAVA!&java17";
 
 
 
@@ -44,13 +44,13 @@ public class EmailService{
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication(EMAIL_SENDER,PASSWORD);
+                return new PasswordAuthentication(senderEmail,senderPassword);
             }
         });
 
         try{
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(EMAIL_SENDER));
+            message.setFrom(new InternetAddress(senderEmail));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSubject(subject);
             message.setText(msg);

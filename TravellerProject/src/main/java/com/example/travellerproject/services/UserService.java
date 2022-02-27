@@ -41,7 +41,6 @@ public class UserService {
                 validator.validateUsername(username);
                 validator.validPassword(password);
                 return validator.validateUsernameAndPassword(username,password);
-
         }
 
         public User register(UserRegisterDTO dto){
@@ -57,14 +56,13 @@ public class UserService {
             u.setPassword(passwordEncoder.encode(dto.getPassword()));
             u.setCreatedAt(LocalDateTime.now());
             userRepository.save(u);
-            String recipient = "stefeanpvivan1998@gmail.com";
+            String recipient = "palakarski@gmail.com";
             String subject = "Registration ";
             String msg = "Your registration was successful. Welcome to Traveller";
             Thread thread = new Thread(() -> emailService.sendEmailNew(recipient, subject, msg));
             thread.start();
             return u;
         }
-
 
         public UserWithOutPassDTO getById(long id){
                 User user = validator.validateUserAndGet(id);
@@ -98,14 +96,12 @@ public class UserService {
                 if(!passwordEncoder.matches(oldpassword,u.getPassword())) {
                     throw new AuthenticationException("Oldpassword doesnt match.");
                 }
-
                 validator.validPassword(newPassword);
                 validator.matchPassAndConfPass(newPassword,confnewpassword);
                 u.setPassword(passwordEncoder.encode(newPassword));
                 userRepository.save(u);
                 return new MessageDTO("Password was changed.");
         }
-
 
         @Transactional
         public MessageDTO forgottenPassword(UserForgottenPassDTO dto) {
