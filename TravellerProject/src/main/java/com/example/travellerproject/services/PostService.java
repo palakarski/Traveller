@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -197,8 +198,9 @@ public class PostService {
         if (user.getFollowedUsers().isEmpty()) {
             throw new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
-        Page<Post> posts = postRepository.getNewsFeed(page,userId);
-        Page<ResponsePostDTO> responseNewsFeed = posts.map(ResponsePostDTO::new);
+        List<Post> posts = postRepository.getNewsFeed(userId);
+        Page<Post> postPage = new PageImpl<Post>(posts,page, posts.size());
+        Page<ResponsePostDTO> responseNewsFeed = postPage.map(ResponsePostDTO::new);
         if (posts.isEmpty()) {
             throw new NotFoundException("There are no post in your newsfeed.");
         }
@@ -215,35 +217,40 @@ public class PostService {
         if(user.getFollowedUsers().isEmpty()){
             throw  new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
-        Page<Post> posts = null;
+        List<Post> posts = null;
         switch (filterName){
-            case "date" -> posts = postRepository.getNewsFeedSortedByDate(pageable,userId);
-            case "category" -> posts = postRepository.getNewsFeedSortedByCategory(pageable,userId);
-            case "like" -> posts = postRepository.getNewsFeedSortedByLikes(pageable,userId);
+            case "date" -> posts = postRepository.getNewsFeedSortedByDate(userId);
+            case "category" -> posts = postRepository.getNewsFeedSortedByCategory(userId);
+            case "like" -> posts = postRepository.getNewsFeedSortedByLikes(userId);
         }
-        Page<ResponsePostDTO> sortedNewsfeed = posts.map(ResponsePostDTO::new);
-        return sortedNewsfeed;
+        Page<Post>postPage = new PageImpl<Post>(posts,pageable, posts.size());
+        Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
+        return responsePostDTOS;
     }
 
     public Page<ResponsePostDTO> getForeignPosts(Pageable page,long userId) {
         User user = validator.validateUserAndGet(userId);
-        Page<Post> postPage = postRepository.getForeignPost(page,userId);
+        List<Post> posts = postRepository.getForeignPost(userId);
+        Page<Post> postPage = new PageImpl<Post>(posts,page, posts.size());
         Page<ResponsePostDTO> postDTOS = postPage.map(ResponsePostDTO::new);
         return postDTOS;
     }
 
     public Page<ResponsePostDTO> getForeignPostsFiltered(Pageable page,long userId, String filterName){
+        User user = validator.validateUserAndGet(userId);
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
         }
-        Page<Post> posts = null;
+        List<Post> posts = null;
         switch (filterName){
-            case "date" -> posts = postRepository.getAllForeignPostSortedByDate(page,userId);
-            case "category" ->posts = postRepository.getAllForeignPostSortedByCategory(page,userId);
-            case "like"->posts = postRepository.getAllForeignPostSortedByLikes(page,userId);
+            case "date" -> posts = postRepository.getAllForeignPostSortedByDate(userId);
+            case "category" ->posts = postRepository.getAllForeignPostSortedByCategory(userId);
+            case "like"->posts = postRepository.getAllForeignPostSortedByLikes(userId);
         }
-        Page<ResponsePostDTO>postDTOSFiltered= posts.map(ResponsePostDTO::new);
-        return postDTOSFiltered;
+
+        Page<Post>postPage = new PageImpl<Post>(posts,page, posts.size());
+        Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
+        return responsePostDTOS;
     }
 
     public Page<CommentResponseDTO> getAllCommentsByPost(Pageable page, long postId) {
