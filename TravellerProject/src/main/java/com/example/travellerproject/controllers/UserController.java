@@ -99,10 +99,10 @@ public class UserController {
             return userService.unfollow(userId,id);
         }
 
-    @PostMapping(value = "/users/create_category")
-    public MessageDTO register(@RequestBody UserCreatesCategoryDTO categoryDTO,HttpSession session){
-        long userId = sessionValidator.isUserLoggedIn(session);
-        return userService.createCategory(userId,categoryDTO);
-    }
+        @PostMapping(value = "/users/create_category")
+        public MessageDTO register(@RequestBody UserCreatesCategoryDTO categoryDTO,HttpSession session){
+            long userId = sessionValidator.isUserLoggedIn(session);
+            return userService.createCategory(userId,categoryDTO);
+        }
 
 }

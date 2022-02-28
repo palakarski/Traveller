@@ -199,17 +199,19 @@ public class PostService {
             throw new BadRequestException("You must have at least  one subscription for your newsfeed.");
         }
         List<Post> posts = postRepository.getNewsFeed(userId);
-        Page<Post> postPage = new PageImpl<Post>(posts,page, posts.size());
+        int start = (int) page.getOffset();
+        int end = (int) ((start + page.getPageSize()) > posts.size() ? posts.size()
+                : (start + page.getPageSize()));
+        Page<Post> postPage = new PageImpl<Post>(posts.subList(start,end),page, posts.size());
         Page<ResponsePostDTO> responseNewsFeed = postPage.map(ResponsePostDTO::new);
         if (posts.isEmpty()) {
             throw new NotFoundException("There are no post in your newsfeed.");
         }
-        //todo return sorted newsfeed
         return responseNewsFeed;
     }
 
 
-    public Page<ResponsePostDTO> getNewsfeedFiltered(Pageable pageable, long userId, String filterName){
+    public Page<ResponsePostDTO> getNewsfeedFiltered(Pageable page, long userId, String filterName){
         User user = userRepository.getById(userId);
         if (!filterName.equals("date") && !filterName.equals("category") && !filterName.equals("like")){
             throw new BadRequestException("No such filters");
@@ -223,7 +225,10 @@ public class PostService {
             case "category" -> posts = postRepository.getNewsFeedSortedByCategory(userId);
             case "like" -> posts = postRepository.getNewsFeedSortedByLikes(userId);
         }
-        Page<Post>postPage = new PageImpl<Post>(posts,pageable, posts.size());
+        int start = (int) page.getOffset();
+        int end = (int) ((start + page.getPageSize()) > posts.size() ? posts.size()
+                : (start + page.getPageSize()));
+        Page<Post>postPage = new PageImpl<Post>(posts.subList(start,end),page, posts.size());
         Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
         return responsePostDTOS;
     }
@@ -231,7 +236,10 @@ public class PostService {
     public Page<ResponsePostDTO> getForeignPosts(Pageable page,long userId) {
         User user = validator.validateUserAndGet(userId);
         List<Post> posts = postRepository.getForeignPost(userId);
-        Page<Post> postPage = new PageImpl<Post>(posts,page, posts.size());
+        int start = (int) page.getOffset();
+        int end = (int) ((start + page.getPageSize()) > posts.size() ? posts.size()
+                : (start + page.getPageSize()));
+        Page<Post> postPage = new PageImpl<Post>(posts.subList(start,end),page, posts.size());
         Page<ResponsePostDTO> postDTOS = postPage.map(ResponsePostDTO::new);
         return postDTOS;
     }
@@ -247,8 +255,10 @@ public class PostService {
             case "category" ->posts = postRepository.getAllForeignPostSortedByCategory(userId);
             case "like"->posts = postRepository.getAllForeignPostSortedByLikes(userId);
         }
-
-        Page<Post>postPage = new PageImpl<Post>(posts,page, posts.size());
+        int start = (int) page.getOffset();
+        int end = (int) ((start + page.getPageSize()) > posts.size() ? posts.size()
+                : (start + page.getPageSize()));
+        Page<Post> postPage = new PageImpl<Post>(posts.subList(start,end),page, posts.size());
         Page<ResponsePostDTO> responsePostDTOS = postPage.map(ResponsePostDTO::new);
         return responsePostDTOS;
     }
