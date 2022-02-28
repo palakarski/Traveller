@@ -90,7 +90,7 @@ public class Post {
     @JsonManagedReference
     private List<Video> videos = new ArrayList<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany()
     //jsonmanagedref
     @JoinTable(
             name ="users_tag_at_posts",

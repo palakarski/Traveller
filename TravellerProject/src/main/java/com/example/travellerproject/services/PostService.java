@@ -193,7 +193,7 @@ public class PostService {
         return postsDTO;
     }
 
-    public Page<ResponsePostDTO> getNewsfeed(Pageable page, long userId) {
+    public Page<ResponsePostDTO>    getNewsfeed(Pageable page, long userId) {
         User user = validator.validateUserAndGet(userId);
         if (user.getFollowedUsers().isEmpty()) {
             throw new BadRequestException("You must have at least  one subscription for your newsfeed.");
