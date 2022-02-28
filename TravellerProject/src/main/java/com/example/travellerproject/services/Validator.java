@@ -62,7 +62,7 @@ public class Validator {
         }
         if(!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")){
             throw new BadRequestException("Password must contain: eight characters, at least one letter, one number and one special character.");
-            //TODO wrong message
+
         }
 
     }
