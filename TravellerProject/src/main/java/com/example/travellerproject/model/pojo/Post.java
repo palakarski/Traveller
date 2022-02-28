@@ -61,7 +61,7 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany()
     @JsonManagedReference
     @JoinTable(
             //rename table usesr --> users_like_posts
@@ -72,7 +72,7 @@ public class Post {
 
 
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany()
     @JoinTable(
             name = "users_dislike_posts",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -90,7 +90,7 @@ public class Post {
     @JsonManagedReference
     private List<Video> videos = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.ALL })
     //jsonmanagedref
     @JoinTable(
             name ="users_tag_at_posts",

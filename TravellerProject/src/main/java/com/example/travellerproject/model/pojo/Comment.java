@@ -38,7 +38,7 @@ public class Comment {
     @Column
     private String text;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany()
     @JsonManagedReference
     @JoinTable(
             name = "users_like_comments",
@@ -46,7 +46,7 @@ public class Comment {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> commentLikers = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany()
     @JsonManagedReference
     @JoinTable(
             name = "users_dislike_comments",

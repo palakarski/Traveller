@@ -57,10 +57,10 @@ public class User {
     @JsonManagedReference
     private List<Post> posts ;
 
-    @ManyToMany(mappedBy = "followedUsers")
+    @ManyToMany(mappedBy = "followedUsers",cascade = { CascadeType.ALL })
     private List<User> followers;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany()
     @JoinTable(
             name ="subscribers",
             joinColumns = {@JoinColumn (name = "subscriber_id")},
